@@ -88,7 +88,8 @@ Open **<http://localhost:5174>**. The dev server forwards `/api` calls to the ba
 so keep both terminals running. Then follow the **Demo script** below.
 
 Single-server option: run `npm run build` in `web/` once instead of `npm run dev`. The backend then
-serves the whole app at <http://localhost:8080> (re-run the build after frontend changes).
+serves the whole app at <http://localhost:8080>. Restart the backend after the first build: it only
+serves the app if `web/dist` existed when it started. Re-run the build after frontend changes.
 
 ### 6. Or run everything in Docker (no Python or Node needed)
 
