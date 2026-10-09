@@ -1,0 +1,521 @@
+{
+ "id": "cnc_machined",
+ "name": "CNC machined component",
+ "description": "Turned / milled precision components, shafts, housings, flanges.",
+ "keywords": [
+  "CNC",
+  "machined",
+  "turning",
+  "milling",
+  "VMC",
+  "shaft",
+  "housing",
+  "flange",
+  "bush",
+  "precision"
+ ],
+ "supplier_type": "CNC machining and precision-engineering suppliers",
+ "purpose": "The component is machined to tight tolerances from bar, forging or casting stock.",
+ "defaults": {
+  "min_turnover_lakh": 200
+ },
+ "weights": [
+  [
+   "Technical capability and tolerances",
+   30
+  ],
+  [
+   "Quality system and inspection",
+   25
+  ],
+  [
+   "Commercial competitiveness",
+   20
+  ],
+  [
+   "Capacity and delivery",
+   10
+  ],
+  [
+   "Financial health",
+   10
+  ],
+  [
+   "Organization and ESG",
+   5
+  ]
+ ],
+ "slots": [
+  {
+   "id": "product_line",
+   "label": "Supplier already makes this product",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Must the supplier already manufacture CNC machined components?",
+   "data_point_ids": [
+    "key_machinery",
+    "nic_codes",
+    "hsn_products"
+   ],
+   "req": "Already manufactures CNC machined components (NIC codes / product range / machinery)",
+   "kind": "mandatory"
+  },
+  {
+   "id": "part_desc",
+   "label": "Component description",
+   "bucket": "technical",
+   "type": "text",
+   "ask": true,
+   "question": "Briefly describe the component and its application."
+  },
+  {
+   "id": "material",
+   "label": "Material",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "EN8 / EN9 steel",
+    "EN19 / EN24 alloy steel",
+    "SS 304 / 316",
+    "Aluminium 6061",
+    "Brass"
+   ],
+   "ask": true,
+   "question": "Material?",
+   "data_point_ids": [
+    "hsn_products"
+   ],
+   "req": "Experience machining {v}",
+   "kind": "scored"
+  },
+  {
+   "id": "tolerance",
+   "label": "Tightest tolerance",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "±0.01 mm",
+    "±0.02 mm",
+    "±0.05 mm",
+    "±0.1 mm"
+   ],
+   "ask": true,
+   "question": "Tightest dimensional tolerance?",
+   "data_point_ids": [
+    "key_machinery"
+   ],
+   "req": "CNC turning / VMC capacity capable of holding {v}",
+   "kind": "mandatory"
+  },
+  {
+   "id": "features",
+   "label": "Critical features",
+   "bucket": "technical",
+   "type": "text",
+   "ask": true,
+   "question": "Any critical features (bores, threads, surface finish Ra)?"
+  },
+  {
+   "id": "heat_treatment",
+   "label": "Heat treatment",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "None",
+    "Hardening & tempering",
+    "Case carburising",
+    "Induction hardening"
+   ],
+   "default": "None",
+   "question": "Heat treatment?",
+   "data_point_ids": [
+    "inhouse_vs_outsourced"
+   ],
+   "req": "Controlled heat-treatment route ({v})",
+   "kind": "scored"
+  },
+  {
+   "id": "finish",
+   "label": "Surface finish / coating",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "As machined",
+    "Zinc plating",
+    "Black oxide",
+    "Anodising"
+   ],
+   "default": "As machined",
+   "question": "Finish / coating?"
+  },
+  {
+   "id": "inspection",
+   "label": "Inspection capability",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "CMM required",
+    "Conventional gauges acceptable"
+   ],
+   "default": "CMM required",
+   "question": "Inspection capability needed?",
+   "data_point_ids": [
+    "testing_equipment"
+   ],
+   "req": "Inspection equipment: {v}",
+   "kind": "scored"
+  },
+  {
+   "id": "sector",
+   "label": "Sector experience",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Automotive / EV",
+    "Electrical & power",
+    "Railways",
+    "Defence",
+    "General engineering"
+   ],
+   "default": "General engineering",
+   "question": "Which industry experience should the supplier have?",
+   "data_point_ids": [
+    "approved_vendor_oems",
+    "client_reference"
+   ],
+   "req": "Proven supply track record to {v} customers",
+   "kind": "scored"
+  }
+ ],
+ "blocks": {
+  "scope": [
+   {
+    "t": "bullet",
+    "text": "Procurement of {{material}} stock with mill test certificates."
+   },
+   {
+    "t": "bullet",
+    "text": "CNC machining to drawing including {{features}}."
+   },
+   {
+    "t": "bullet",
+    "text": "Heat treatment ({{heat_treatment}}) and finishing ({{finish}}) where specified."
+   },
+   {
+    "t": "bullet",
+    "text": "Inspection reports, packaging and delivery to the buyer plant."
+   }
+  ],
+  "technical": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Attribute",
+      "Indicative requirement"
+     ],
+     [
+      "Component",
+      "{{part_desc}}"
+     ],
+     [
+      "Material",
+      "{{material}}"
+     ],
+     [
+      "Tightest tolerance",
+      "{{tolerance}}"
+     ],
+     [
+      "Critical features",
+      "{{features}}"
+     ],
+     [
+      "Heat treatment",
+      "{{heat_treatment}}"
+     ],
+     [
+      "Finish",
+      "{{finish}}"
+     ],
+     [
+      "Inspection",
+      "{{inspection}}"
+     ]
+    ]
+   }
+  ],
+  "deliverables": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Deliverable",
+      "Minimum requirement",
+      "Timing"
+     ],
+     [
+      "Feasibility review",
+      "Tolerance and process capability review",
+      "With quotation"
+     ],
+     [
+      "First article inspection",
+      "Full dimensional report",
+      "Before production"
+     ],
+     [
+      "Certificates",
+      "MTC, heat-treatment report, certificate of conformity",
+      "Each lot"
+     ]
+    ]
+   }
+  ],
+  "process": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Process area",
+      "Expected capability",
+      "Evidence required"
+     ],
+     [
+      "Turning",
+      "CNC turning centres with bar feeders",
+      "Machine list"
+     ],
+     [
+      "Milling",
+      "VMC / HMC with 4th axis where required",
+      "Machine list and fixtures"
+     ],
+     [
+      "Grinding",
+      "Cylindrical / surface grinding for {{tolerance}} features",
+      "Machine details"
+     ],
+     [
+      "Inspection",
+      "{{inspection}}",
+      "Gauge list and calibration status"
+     ]
+    ]
+   }
+  ],
+  "equipment": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Equipment",
+      "Make model and year",
+      "Capacity or accuracy",
+      "Quantity",
+      "Owned or outsourced"
+     ],
+     [
+      "CNC turning centres",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "VMC / HMC",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Grinding machines",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Drilling / tapping",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Heat treatment (if in-house)",
+      "",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "gauges": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Gauge or equipment",
+      "Range / accuracy",
+      "Quantity",
+      "Calibration status"
+     ],
+     [
+      "CMM",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Bore gauges",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Thread gauges",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Surface roughness tester",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Hardness tester",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "cost": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Cost element",
+      "INR per unit",
+      "Basis or assumption"
+     ],
+     [
+      "Raw material",
+      "",
+      ""
+     ],
+     [
+      "Turning",
+      "",
+      ""
+     ],
+     [
+      "Milling",
+      "",
+      ""
+     ],
+     [
+      "Grinding",
+      "",
+      ""
+     ],
+     [
+      "Heat treatment",
+      "",
+      ""
+     ],
+     [
+      "Finishing",
+      "",
+      ""
+     ],
+     [
+      "Inspection",
+      "",
+      ""
+     ],
+     [
+      "Packaging",
+      "",
+      ""
+     ],
+     [
+      "Freight to buyer plant",
+      "",
+      ""
+     ],
+     [
+      "Overheads",
+      "",
+      ""
+     ],
+     [
+      "Profit",
+      "",
+      ""
+     ],
+     [
+      "Delivered unit price before GST",
+      "",
+      ""
+     ],
+     [
+      "GST rate",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "assumptions": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Input",
+      "Supplier value",
+      "Notes"
+     ],
+     [
+      "Material and source",
+      "",
+      ""
+     ],
+     [
+      "Input weight per part",
+      "",
+      ""
+     ],
+     [
+      "Cycle time per operation",
+      "",
+      ""
+     ],
+     [
+      "Batch size",
+      "",
+      ""
+     ]
+    ]
+   }
+  ]
+ }
+}

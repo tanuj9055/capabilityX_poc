@@ -1,0 +1,485 @@
+{
+ "id": "fasteners",
+ "name": "Fasteners",
+ "description": "Bolts, nuts, screws, studs, washers — standard or special fasteners.",
+ "keywords": [
+  "bolt",
+  "nut",
+  "screw",
+  "fastener",
+  "stud",
+  "washer",
+  "M10",
+  "M12",
+  "hex",
+  "rivet"
+ ],
+ "supplier_type": "fastener manufacturers",
+ "purpose": "Fasteners shall conform to the stated standard, property class and coating.",
+ "defaults": {
+  "min_turnover_lakh": 150
+ },
+ "weights": [
+  [
+   "Conformance to standard and testing",
+   30
+  ],
+  [
+   "Quality system",
+   20
+  ],
+  [
+   "Commercial competitiveness",
+   25
+  ],
+  [
+   "Capacity and delivery",
+   15
+  ],
+  [
+   "Financial health",
+   5
+  ],
+  [
+   "Organization and ESG",
+   5
+  ]
+ ],
+ "slots": [
+  {
+   "id": "product_line",
+   "label": "Supplier already makes this product",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Must the supplier already manufacture fasteners (bolts, nuts, studs, screws)?",
+   "data_point_ids": [
+    "key_machinery",
+    "nic_codes",
+    "hsn_products"
+   ],
+   "req": "Already manufactures fasteners (bolts, nuts, studs, screws) (NIC codes / product range / machinery)",
+   "kind": "mandatory"
+  },
+  {
+   "id": "fastener_type",
+   "label": "Fastener type",
+   "bucket": "technical",
+   "type": "text",
+   "ask": true,
+   "question": "What fasteners (e.g. hex bolts, nuts, studs) and sizes?",
+   "hint": "e.g. M10 x 40 hex bolts"
+  },
+  {
+   "id": "standard",
+   "label": "Standard",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "IS 1364 / IS 1367",
+    "DIN 933 / 931",
+    "ISO 4014 / 4017",
+    "ASME B18"
+   ],
+   "ask": true,
+   "question": "Which standard?"
+  },
+  {
+   "id": "property_class",
+   "label": "Property class / grade",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "4.6",
+    "8.8",
+    "10.9",
+    "12.9",
+    "SS A2-70"
+   ],
+   "ask": true,
+   "question": "Property class / grade?",
+   "data_point_ids": [
+    "testing_equipment"
+   ],
+   "req": "In-house mechanical testing (hardness, proof load) for property class {v}",
+   "kind": "scored"
+  },
+  {
+   "id": "coating",
+   "label": "Coating",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Zinc plated",
+    "Hot-dip galvanised",
+    "Geomet / zinc flake",
+    "Black oxide",
+    "Plain"
+   ],
+   "ask": true,
+   "question": "Coating?",
+   "data_point_ids": [
+    "inhouse_vs_outsourced"
+   ],
+   "req": "Controlled coating route ({v})",
+   "kind": "scored"
+  },
+  {
+   "id": "manufacturing",
+   "label": "Manufacturing route",
+   "bucket": "technical",
+   "type": "multi",
+   "options": [
+    "Cold forging / heading",
+    "Hot forging",
+    "Thread rolling",
+    "Machining",
+    "Heat treatment"
+   ],
+   "default": [
+    "Cold forging / heading",
+    "Thread rolling",
+    "Heat treatment"
+   ],
+   "question": "Required manufacturing processes?",
+   "data_point_ids": [
+    "key_machinery"
+   ],
+   "req": "In-house {v} capacity",
+   "kind": "scored"
+  },
+  {
+   "id": "bis",
+   "label": "BIS certification",
+   "bucket": "technical",
+   "type": "level",
+   "options": [
+    "Mandatory",
+    "Preferred",
+    "Not needed"
+   ],
+   "default": "Preferred",
+   "question": "BIS certification for the fastener standard?",
+   "data_point_ids": [
+    "bis_cert",
+    "sector_certification"
+   ],
+   "req": "BIS certification for the quoted standard",
+   "kind": "scored"
+  },
+  {
+   "id": "sector",
+   "label": "Sector experience",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Automotive / EV",
+    "Electrical & power",
+    "Railways",
+    "General engineering"
+   ],
+   "default": "General engineering",
+   "question": "Which industry experience should the supplier have?",
+   "data_point_ids": [
+    "approved_vendor_oems",
+    "client_reference"
+   ],
+   "req": "Proven supply track record to {v} customers",
+   "kind": "scored"
+  }
+ ],
+ "blocks": {
+  "scope": [
+   {
+    "t": "bullet",
+    "text": "Manufacture and supply of {{fastener_type}} to {{standard}}, property class {{property_class}}."
+   },
+   {
+    "t": "bullet",
+    "text": "Coating: {{coating}}; heat treatment and testing per standard."
+   },
+   {
+    "t": "bullet",
+    "text": "Lot-wise test certificates, packaging and delivery to the buyer plant."
+   }
+  ],
+  "technical": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Attribute",
+      "Indicative requirement"
+     ],
+     [
+      "Fastener",
+      "{{fastener_type}}"
+     ],
+     [
+      "Standard",
+      "{{standard}}"
+     ],
+     [
+      "Property class",
+      "{{property_class}}"
+     ],
+     [
+      "Coating",
+      "{{coating}}"
+     ],
+     [
+      "Manufacturing route",
+      "{{manufacturing}}"
+     ],
+     [
+      "BIS certification",
+      "{{bis}}"
+     ]
+    ]
+   }
+  ],
+  "deliverables": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Deliverable",
+      "Minimum requirement",
+      "Timing"
+     ],
+     [
+      "Test certificates",
+      "Hardness, proof load, tensile, coating thickness",
+      "Each lot"
+     ],
+     [
+      "Samples",
+      "Initial samples with full test report",
+      "Before production"
+     ]
+    ]
+   }
+  ],
+  "process": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Process area",
+      "Expected capability",
+      "Evidence required"
+     ],
+     [
+      "Heading / forging",
+      "Cold or hot forging matched to size range",
+      "Machine list"
+     ],
+     [
+      "Threading",
+      "Thread rolling with gauge control",
+      "Thread gauges"
+     ],
+     [
+      "Heat treatment",
+      "Controlled hardening & tempering for class {{property_class}}",
+      "Furnace records"
+     ],
+     [
+      "Testing",
+      "Hardness, proof-load and tensile testing",
+      "Lab equipment list"
+     ]
+    ]
+   }
+  ],
+  "equipment": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Equipment",
+      "Make model and year",
+      "Capacity or accuracy",
+      "Quantity",
+      "Owned or outsourced"
+     ],
+     [
+      "Cold headers / forging presses",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Thread rolling machines",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Heat treatment furnace",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Plating / coating line",
+      "",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "gauges": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Gauge or equipment",
+      "Range / accuracy",
+      "Quantity",
+      "Calibration status"
+     ],
+     [
+      "Universal testing machine",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Hardness tester",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Thread ring / plug gauges",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Coating thickness gauge",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "cost": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Cost element",
+      "INR per unit",
+      "Basis or assumption"
+     ],
+     [
+      "Wire rod / bar input",
+      "",
+      ""
+     ],
+     [
+      "Forging / heading",
+      "",
+      ""
+     ],
+     [
+      "Threading",
+      "",
+      ""
+     ],
+     [
+      "Heat treatment",
+      "",
+      ""
+     ],
+     [
+      "Coating",
+      "",
+      ""
+     ],
+     [
+      "Testing",
+      "",
+      ""
+     ],
+     [
+      "Packaging",
+      "",
+      ""
+     ],
+     [
+      "Freight to buyer plant",
+      "",
+      ""
+     ],
+     [
+      "Overheads",
+      "",
+      ""
+     ],
+     [
+      "Profit",
+      "",
+      ""
+     ],
+     [
+      "Delivered unit price before GST",
+      "",
+      ""
+     ],
+     [
+      "GST rate",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "assumptions": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Input",
+      "Supplier value",
+      "Notes"
+     ],
+     [
+      "Wire rod grade and source",
+      "",
+      ""
+     ],
+     [
+      "Weight per 1000 pcs",
+      "",
+      ""
+     ],
+     [
+      "Batch size",
+      "",
+      ""
+     ]
+    ]
+   }
+  ]
+ }
+}

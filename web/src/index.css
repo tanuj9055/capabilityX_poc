@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@layer base {
+  body { @apply bg-slate-50 text-slate-800; }
+}
+@layer components {
+  .btn-primary, .btn-ghost { @apply inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply bg-indigo-600 text-white hover:bg-indigo-700; }
+  .btn-ghost { @apply border border-slate-300 bg-white hover:bg-slate-100; }
+  .card { @apply rounded-lg border border-slate-200 bg-white shadow-sm; }
+  .input { @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none; }
+  .chip { @apply rounded-full border px-3 py-1 text-xs transition; }
+}

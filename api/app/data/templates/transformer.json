@@ -1,0 +1,497 @@
+{
+ "id": "transformer",
+ "name": "Transformer / electrical equipment",
+ "description": "Distribution / power transformers, CTs/PTs and similar electrical equipment.",
+ "keywords": [
+  "transformer",
+  "kVA",
+  "distribution transformer",
+  "DT",
+  "CT",
+  "PT",
+  "switchgear",
+  "electrical equipment",
+  "DISCOM",
+  "11kV",
+  "33kV"
+ ],
+ "supplier_type": "transformer and electrical-equipment manufacturers",
+ "purpose": "The equipment shall be designed, manufactured and type-tested to the stated standards.",
+ "defaults": {
+  "min_turnover_lakh": 300,
+  "iso_14001": "Not needed",
+  "iso_45001": "Not needed",
+  "delivery_model": "Monthly lots",
+  "payment_days": "90"
+ },
+ "weights": [
+  [
+   "Technical compliance and type tests",
+   30
+  ],
+  [
+   "Quality and certifications",
+   20
+  ],
+  [
+   "Commercial competitiveness",
+   25
+  ],
+  [
+   "Capacity and delivery",
+   10
+  ],
+  [
+   "Financial health",
+   10
+  ],
+  [
+   "Organization and ESG",
+   5
+  ]
+ ],
+ "slots": [
+  {
+   "id": "product_line",
+   "label": "Supplier already makes this product",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Must the supplier already manufacture transformers or similar electrical equipment?",
+   "data_point_ids": [
+    "key_machinery",
+    "nic_codes",
+    "hsn_products"
+   ],
+   "req": "Already manufactures transformers or similar electrical equipment (NIC codes / product range / machinery)",
+   "kind": "mandatory"
+  },
+  {
+   "id": "rating_kva",
+   "label": "Rating",
+   "bucket": "technical",
+   "type": "number",
+   "ask": true,
+   "question": "Transformer rating (kVA)?",
+   "unit": "kVA"
+  },
+  {
+   "id": "voltage",
+   "label": "Voltage ratio",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "11 kV / 433 V",
+    "33 kV / 433 V",
+    "33 kV / 11 kV"
+   ],
+   "ask": true,
+   "question": "Voltage ratio?"
+  },
+  {
+   "id": "cooling",
+   "label": "Cooling",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "ONAN",
+    "ONAF"
+   ],
+   "default": "ONAN",
+   "question": "Cooling type?"
+  },
+  {
+   "id": "standard",
+   "label": "Standard",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "IS 1180 (Part 1)",
+    "IS 2026",
+    "IEC 60076"
+   ],
+   "ask": true,
+   "question": "Design standard?",
+   "data_point_ids": [
+    "key_machinery",
+    "hsn_products"
+   ],
+   "req": "In-house winding, core-building and tanking facility for {rating_kva} kVA units to {v}",
+   "kind": "mandatory"
+  },
+  {
+   "id": "efficiency",
+   "label": "Energy efficiency level",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "BEE Level 2",
+    "BEE Level 3",
+    "Not specified"
+   ],
+   "default": "BEE Level 2",
+   "question": "Energy efficiency level?"
+  },
+  {
+   "id": "bis",
+   "label": "BIS certification",
+   "bucket": "technical",
+   "type": "level",
+   "options": [
+    "Mandatory",
+    "Preferred",
+    "Not needed"
+   ],
+   "default": "Mandatory",
+   "question": "BIS certification?",
+   "data_point_ids": [
+    "bis_cert",
+    "sector_certification"
+   ],
+   "req": "Valid BIS licence for the quoted transformer standard",
+   "kind": "scored"
+  },
+  {
+   "id": "type_test",
+   "label": "Type-test reports",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "CPRI / NABL type-tested design",
+    "Routine tests only"
+   ],
+   "default": "CPRI / NABL type-tested design",
+   "question": "Type-test requirement?",
+   "data_point_ids": [
+    "testing_equipment",
+    "completion_cert"
+   ],
+   "req": "{v} and in-house routine-test lab",
+   "kind": "scored"
+  },
+  {
+   "id": "utility_exp",
+   "label": "Utility supply experience",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Require prior supply to DISCOMs / utilities?",
+   "data_point_ids": [
+    "approved_vendor_oems",
+    "rev_govt_pct",
+    "client_reference"
+   ],
+   "req": "Prior supply to DISCOMs / utilities with completion certificates",
+   "kind": "scored"
+  }
+ ],
+ "blocks": {
+  "scope": [
+   {
+    "t": "bullet",
+    "text": "Design, manufacture and supply of {{rating_kva}} kVA, {{voltage}}, {{cooling}} transformers to {{standard}}."
+   },
+   {
+    "t": "bullet",
+    "text": "Type-test reports ({{type_test}}) and routine tests on every unit."
+   },
+   {
+    "t": "bullet",
+    "text": "Packing, transport, unloading at site and guarantee support."
+   }
+  ],
+  "technical": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Attribute",
+      "Indicative requirement"
+     ],
+     [
+      "Rating",
+      "{{rating_kva}} kVA"
+     ],
+     [
+      "Voltage ratio",
+      "{{voltage}}"
+     ],
+     [
+      "Cooling",
+      "{{cooling}}"
+     ],
+     [
+      "Standard",
+      "{{standard}}"
+     ],
+     [
+      "Energy efficiency",
+      "{{efficiency}}"
+     ],
+     [
+      "BIS",
+      "{{bis}}"
+     ],
+     [
+      "Type tests",
+      "{{type_test}}"
+     ]
+    ]
+   }
+  ],
+  "deliverables": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Deliverable",
+      "Minimum requirement",
+      "Timing"
+     ],
+     [
+      "GTP and drawings",
+      "Guaranteed technical particulars and GA drawing",
+      "With quotation"
+     ],
+     [
+      "Type-test reports",
+      "{{type_test}}",
+      "With quotation"
+     ],
+     [
+      "Routine test reports",
+      "Every unit",
+      "Before dispatch"
+     ]
+    ]
+   }
+  ],
+  "process": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Process area",
+      "Expected capability",
+      "Evidence required"
+     ],
+     [
+      "Winding",
+      "HV / LV winding machines",
+      "Machine list"
+     ],
+     [
+      "Core building",
+      "CRGO slitting / cutting and core building",
+      "Facility details"
+     ],
+     [
+      "Drying and tanking",
+      "Vapour-phase or oven drying, oil filtration",
+      "Equipment list"
+     ],
+     [
+      "Testing",
+      "Routine-test lab per {{standard}}",
+      "Lab calibration certificates"
+     ]
+    ]
+   }
+  ],
+  "equipment": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Equipment",
+      "Make model and year",
+      "Capacity or accuracy",
+      "Quantity",
+      "Owned or outsourced"
+     ],
+     [
+      "Winding machines",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Core cutting / building",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Drying oven / VPD",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Oil filtration plant",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tank fabrication",
+      "",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "gauges": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Gauge or equipment",
+      "Range / accuracy",
+      "Quantity",
+      "Calibration status"
+     ],
+     [
+      "Transformer test bench",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Loss measurement kit",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Insulation resistance tester",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Oil BDV test set",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "cost": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Cost element",
+      "INR per unit",
+      "Basis or assumption"
+     ],
+     [
+      "CRGO / amorphous core",
+      "",
+      ""
+     ],
+     [
+      "Copper / aluminium winding",
+      "",
+      ""
+     ],
+     [
+      "Transformer oil",
+      "",
+      ""
+     ],
+     [
+      "Tank and fittings",
+      "",
+      ""
+     ],
+     [
+      "Labour and testing",
+      "",
+      ""
+     ],
+     [
+      "Packaging",
+      "",
+      ""
+     ],
+     [
+      "Freight to buyer plant",
+      "",
+      ""
+     ],
+     [
+      "Overheads",
+      "",
+      ""
+     ],
+     [
+      "Profit",
+      "",
+      ""
+     ],
+     [
+      "Delivered unit price before GST",
+      "",
+      ""
+     ],
+     [
+      "GST rate",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "assumptions": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Input",
+      "Supplier value",
+      "Notes"
+     ],
+     [
+      "Core and conductor material",
+      "",
+      ""
+     ],
+     [
+      "No-load / load losses",
+      "",
+      ""
+     ],
+     [
+      "Weight of core and coil",
+      "",
+      ""
+     ]
+    ]
+   }
+  ]
+ }
+}

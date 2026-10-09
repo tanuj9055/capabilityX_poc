@@ -1,0 +1,550 @@
+{
+ "id": "sheet_metal",
+ "name": "Sheet-metal pressed / bent part",
+ "description": "Pressed, bent, laser-cut or stamped steel/aluminium parts and brackets (VoltEdge format).",
+ "keywords": [
+  "bracket",
+  "sheet metal",
+  "pressing",
+  "stamping",
+  "bending",
+  "laser cutting",
+  "CRCA",
+  "pressed part",
+  "enclosure",
+  "panel"
+ ],
+ "supplier_type": "sheet metal and precision-engineering suppliers",
+ "purpose": "The part is formed from sheet and finished to the released drawing.",
+ "defaults": {
+  "iatf_16949": "Preferred",
+  "min_turnover_lakh": 300
+ },
+ "weights": [
+  [
+   "Technical feasibility process and equipment",
+   25
+  ],
+  [
+   "Quality system and performance",
+   20
+  ],
+  [
+   "Commercial competitiveness and cost transparency",
+   20
+  ],
+  [
+   "Capacity, delivery and readiness",
+   15
+  ],
+  [
+   "Financial health and liquidity",
+   10
+  ],
+  [
+   "Organization, ESG and continuity",
+   10
+  ]
+ ],
+ "slots": [
+  {
+   "id": "product_line",
+   "label": "Supplier already makes this product",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Must the supplier already manufacture sheet-metal pressed / bent / laser-cut parts?",
+   "data_point_ids": [
+    "key_machinery",
+    "nic_codes",
+    "hsn_products"
+   ],
+   "req": "Already manufactures sheet-metal pressed / bent / laser-cut parts (NIC codes / product range / machinery)",
+   "kind": "mandatory"
+  },
+  {
+   "id": "part_desc",
+   "label": "Component description",
+   "bucket": "technical",
+   "type": "text",
+   "ask": true,
+   "question": "Briefly describe the part and where it is used."
+  },
+  {
+   "id": "material",
+   "label": "Material grade",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "CRCA IS 513 DD",
+    "HR IS 1079",
+    "Galvanised GI IS 277",
+    "SS 304",
+    "Aluminium 5052"
+   ],
+   "ask": true,
+   "question": "Material grade?",
+   "data_point_ids": [
+    "hsn_products"
+   ],
+   "req": "Proven production in {v} sheet / strip",
+   "kind": "scored"
+  },
+  {
+   "id": "thickness_mm",
+   "label": "Nominal thickness",
+   "bucket": "technical",
+   "type": "number",
+   "ask": true,
+   "question": "Nominal sheet thickness (mm)?",
+   "unit": "mm"
+  },
+  {
+   "id": "processes",
+   "label": "Manufacturing route",
+   "bucket": "technical",
+   "type": "multi",
+   "options": [
+    "Laser cutting",
+    "Blanking",
+    "Pressing",
+    "Bending",
+    "CNC machining",
+    "Welding"
+   ],
+   "default": [
+    "Laser cutting",
+    "Pressing",
+    "Bending"
+   ],
+   "ask": true,
+   "question": "Which processes are needed?",
+   "data_point_ids": [
+    "key_machinery",
+    "inhouse_vs_outsourced"
+   ],
+   "req": "In-house equipment for {v}",
+   "kind": "mandatory"
+  },
+  {
+   "id": "finish",
+   "label": "Surface finish",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Zinc plating + trivalent passivation",
+    "Powder coating",
+    "ED coating",
+    "None"
+   ],
+   "ask": true,
+   "question": "Surface finish?",
+   "data_point_ids": [
+    "inhouse_vs_outsourced"
+   ],
+   "req": "Surface treatment ({v}) in-house or through a controlled sub-tier",
+   "kind": "scored"
+  },
+  {
+   "id": "ppap",
+   "label": "Sample approval",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "PPAP Level 3",
+    "PPAP Level 2",
+    "First article inspection only"
+   ],
+   "default": "PPAP Level 3",
+   "question": "Sample / part approval level?",
+   "data_point_ids": [
+    "testing_equipment",
+    "quality_policy"
+   ],
+   "req": "{v} with APQP core tools and calibrated dimensional / coating inspection",
+   "kind": "scored"
+  },
+  {
+   "id": "sector",
+   "label": "Sector experience",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Automotive / EV",
+    "Electrical & power",
+    "Railways",
+    "General engineering"
+   ],
+   "default": "Automotive / EV",
+   "question": "Which industry experience should the supplier have?",
+   "data_point_ids": [
+    "approved_vendor_oems",
+    "client_reference",
+    "repeat_business_pct"
+   ],
+   "req": "Proven supply track record to {v} customers",
+   "kind": "scored"
+  }
+ ],
+ "blocks": {
+  "scope": [
+   {
+    "t": "bullet",
+    "text": "Procurement of approved raw material ({{material}}) and full material traceability."
+   },
+   {
+    "t": "bullet",
+    "text": "Tooling, fixtures, gauges and process development for {{processes}} and inspection."
+   },
+   {
+    "t": "bullet",
+    "text": "Trial samples, dimensional reports and {{ppap}} documentation."
+   },
+   {
+    "t": "bullet",
+    "text": "Serial production, surface protection ({{finish}}), packaging and delivery to the buyer plant."
+   }
+  ],
+  "technical": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Attribute",
+      "Indicative requirement"
+     ],
+     [
+      "Component",
+      "{{part_desc}}"
+     ],
+     [
+      "Material",
+      "{{material}} or drawing-approved equivalent"
+     ],
+     [
+      "Nominal thickness",
+      "{{thickness_mm}} mm, subject to released drawing"
+     ],
+     [
+      "Manufacturing route",
+      "{{processes}}, deburring, surface treatment and final inspection"
+     ],
+     [
+      "Surface finish",
+      "{{finish}}"
+     ],
+     [
+      "Appearance",
+      "Free from sharp edges, burrs, cracks, rust, dents, distortion and coating damage"
+     ],
+     [
+      "Part marking",
+      "Supplier code, tool identification, batch code and date traceability"
+     ]
+    ]
+   }
+  ],
+  "deliverables": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Deliverable",
+      "Minimum requirement",
+      "Timing"
+     ],
+     [
+      "Feasibility review",
+      "Signed review covering material, tooling, tolerances, route and capacity",
+      "With quotation"
+     ],
+     [
+      "Process flow",
+      "End-to-end flow including outsourced operations",
+      "With quotation"
+     ],
+     [
+      "Trial samples",
+      "From intended process and tooling",
+      "Before approval"
+     ],
+     [
+      "Part approval",
+      "{{ppap}}",
+      "Before production shipment"
+     ],
+     [
+      "Certificates",
+      "Material test certificate, coating report and certificate of conformity",
+      "Each lot"
+     ]
+    ]
+   }
+  ],
+  "process": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Process area",
+      "Expected capability",
+      "Evidence required"
+     ],
+     [
+      "Material preparation",
+      "Sheet storage, identification, blanking or laser cutting",
+      "Equipment list and traceability flow"
+     ],
+     [
+      "Pressing",
+      "Suitable press tonnage, die setting, guarding and poka-yoke",
+      "Press details and utilization"
+     ],
+     [
+      "Bending",
+      "CNC press brake with back-gauge and tooling",
+      "Machine details and calibration"
+     ],
+     [
+      "Machining",
+      "CNC VMC / drilling for drawing-controlled features",
+      "Machine capability and fixtures"
+     ],
+     [
+      "Surface treatment",
+      "{{finish}} with thickness, adhesion and corrosion controls",
+      "Approved source and test plan"
+     ],
+     [
+      "Inspection",
+      "Calibrated dimensional, visual and coating inspection",
+      "Gauge list and calibration status"
+     ]
+    ]
+   }
+  ],
+  "equipment": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Equipment",
+      "Make model and year",
+      "Capacity or accuracy",
+      "Quantity",
+      "Owned or outsourced"
+     ],
+     [
+      "Presses",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "CNC press brakes",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Laser or blanking equipment",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "CNC VMC or machining centres",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Deburring and finishing",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Surface treatment",
+      "",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "gauges": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Gauge or equipment",
+      "Range / accuracy",
+      "Quantity",
+      "Calibration status"
+     ],
+     [
+      "CMM or vision system",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Height gauge and surface plate",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Coating thickness gauge",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Salt spray access",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "cost": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Cost element",
+      "INR per unit",
+      "Basis or assumption"
+     ],
+     [
+      "Steel input at gross weight",
+      "",
+      ""
+     ],
+     [
+      "Scrap credit",
+      "",
+      ""
+     ],
+     [
+      "Blanking or laser cutting",
+      "",
+      ""
+     ],
+     [
+      "Pressing and bending",
+      "",
+      ""
+     ],
+     [
+      "Machining",
+      "",
+      ""
+     ],
+     [
+      "Surface treatment",
+      "",
+      ""
+     ],
+     [
+      "Inspection and testing",
+      "",
+      ""
+     ],
+     [
+      "Packaging",
+      "",
+      ""
+     ],
+     [
+      "Freight to buyer plant",
+      "",
+      ""
+     ],
+     [
+      "Overheads",
+      "",
+      ""
+     ],
+     [
+      "Profit",
+      "",
+      ""
+     ],
+     [
+      "Delivered unit price before GST",
+      "",
+      ""
+     ],
+     [
+      "GST rate",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "assumptions": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Input",
+      "Supplier value",
+      "Notes"
+     ],
+     [
+      "Material grade and source",
+      "",
+      ""
+     ],
+     [
+      "Material thickness",
+      "",
+      ""
+     ],
+     [
+      "Gross / net weight per part",
+      "",
+      ""
+     ],
+     [
+      "Material yield percentage",
+      "",
+      ""
+     ],
+     [
+      "Pressing cycle time",
+      "",
+      ""
+     ],
+     [
+      "Quoted production batch",
+      "",
+      ""
+     ]
+    ]
+   }
+  ]
+ }
+}

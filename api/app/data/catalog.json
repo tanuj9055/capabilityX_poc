@@ -1,0 +1,564 @@
+{
+  "categories": [
+    {
+      "id": "org",
+      "label": "Organisation Structure & Health"
+    },
+    {
+      "id": "policy",
+      "label": "Policies & Practices"
+    },
+    {
+      "id": "ops",
+      "label": "Operations – Technical Capacity"
+    },
+    {
+      "id": "fin",
+      "label": "Financial Details"
+    },
+    {
+      "id": "cert",
+      "label": "Certifications"
+    },
+    {
+      "id": "cust",
+      "label": "Customer Concentration & Revenue Mix"
+    }
+  ],
+  "data_points": [
+    {
+      "id": "legal_structure",
+      "category": "org",
+      "label": "Legal structure",
+      "source": "MetalCapital · Udyam"
+    },
+    {
+      "id": "date_incorporation",
+      "category": "org",
+      "label": "Date of incorporation",
+      "source": "MetalCapital · Udyam"
+    },
+    {
+      "id": "date_commencement",
+      "category": "org",
+      "label": "Date of commencement",
+      "source": "MetalCapital · Udyam"
+    },
+    {
+      "id": "nic_codes",
+      "category": "org",
+      "label": "NIC codes (industry classification)",
+      "source": "MetalCapital · Udyam"
+    },
+    {
+      "id": "enterprise_class",
+      "category": "org",
+      "label": "Enterprise classification (Micro/Small/Medium)",
+      "source": "MetalCapital · Udyam"
+    },
+    {
+      "id": "promoter_experience_yrs",
+      "category": "org",
+      "label": "Promoter / key management experience (yrs)",
+      "source": "Survey"
+    },
+    {
+      "id": "employees_permanent",
+      "category": "org",
+      "label": "Employees – permanent",
+      "source": "Survey"
+    },
+    {
+      "id": "employees_contract",
+      "category": "org",
+      "label": "Employees – contract/casual",
+      "source": "Survey"
+    },
+    {
+      "id": "attrition_pct",
+      "category": "org",
+      "label": "Annual attrition rate (%)",
+      "source": "Survey"
+    },
+    {
+      "id": "succession_plan",
+      "category": "org",
+      "label": "Succession plan in place",
+      "source": "Survey"
+    },
+    {
+      "id": "group_companies",
+      "category": "org",
+      "label": "Group / associate companies",
+      "source": "Survey"
+    },
+    {
+      "id": "org_chart",
+      "category": "org",
+      "label": "Organisation chart available",
+      "source": "Survey"
+    },
+    {
+      "id": "quality_policy",
+      "category": "policy",
+      "label": "Documented quality policy",
+      "source": "Survey"
+    },
+    {
+      "id": "hr_policy",
+      "category": "policy",
+      "label": "Documented HR policy",
+      "source": "Survey"
+    },
+    {
+      "id": "ehs_policy",
+      "category": "policy",
+      "label": "Documented EHS / safety policy",
+      "source": "Survey"
+    },
+    {
+      "id": "internal_audit_freq",
+      "category": "policy",
+      "label": "Internal audit frequency",
+      "source": "Survey"
+    },
+    {
+      "id": "grievance_mechanism",
+      "category": "policy",
+      "label": "Grievance / whistle-blower mechanism",
+      "source": "Survey"
+    },
+    {
+      "id": "labour_violation_3y",
+      "category": "policy",
+      "label": "Labour law violation (last 3 yrs)",
+      "source": "Survey"
+    },
+    {
+      "id": "posh_compliance",
+      "category": "policy",
+      "label": "POSH compliance",
+      "source": "Survey"
+    },
+    {
+      "id": "itr_timeliness",
+      "category": "policy",
+      "label": "ITR filing timeliness",
+      "source": "MetalCapital · ITR"
+    },
+    {
+      "id": "statutory_dues",
+      "category": "policy",
+      "label": "Statutory dues not deposited on time",
+      "source": "MetalCapital · ITR"
+    },
+    {
+      "id": "gst_filing_timeliness",
+      "category": "policy",
+      "label": "GST return filing timeliness",
+      "source": "MetalCapital · GST"
+    },
+    {
+      "id": "blacklisting",
+      "category": "policy",
+      "label": "Blacklisting / debarment declaration",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "key_machinery",
+      "category": "ops",
+      "label": "Key machinery / equipment",
+      "source": "Survey"
+    },
+    {
+      "id": "installed_capacity",
+      "category": "ops",
+      "label": "Installed capacity (units/month)",
+      "source": "Survey"
+    },
+    {
+      "id": "capacity_utilisation_pct",
+      "category": "ops",
+      "label": "Current capacity utilisation (%)",
+      "source": "Survey"
+    },
+    {
+      "id": "otd_pct",
+      "category": "ops",
+      "label": "On-time delivery % (last 12m)",
+      "source": "Survey"
+    },
+    {
+      "id": "rejection_rate_pct",
+      "category": "ops",
+      "label": "Rejection / rework rate % (last 12m)",
+      "source": "Survey"
+    },
+    {
+      "id": "inventory_turns",
+      "category": "ops",
+      "label": "Inventory turns (per year)",
+      "source": "Survey"
+    },
+    {
+      "id": "rm_lead_time_days",
+      "category": "ops",
+      "label": "Raw material lead time (days)",
+      "source": "Survey"
+    },
+    {
+      "id": "inhouse_vs_outsourced",
+      "category": "ops",
+      "label": "In-house vs outsourced processes",
+      "source": "Survey"
+    },
+    {
+      "id": "testing_equipment",
+      "category": "ops",
+      "label": "Testing / gauging equipment",
+      "source": "Survey"
+    },
+    {
+      "id": "electricity_consumption",
+      "category": "ops",
+      "label": "Monthly electricity consumption trend",
+      "source": "MetalCapital · Electricity bill"
+    },
+    {
+      "id": "load_utilisation",
+      "category": "ops",
+      "label": "Electrical load utilisation %",
+      "source": "MetalCapital · Electricity bill"
+    },
+    {
+      "id": "sanctioned_load",
+      "category": "ops",
+      "label": "Sanctioned electricity load",
+      "source": "MetalCapital · Electricity bill"
+    },
+    {
+      "id": "hsn_products",
+      "category": "ops",
+      "label": "HSN-wise product breakdown",
+      "source": "MetalCapital · GST"
+    },
+    {
+      "id": "largest_order",
+      "category": "ops",
+      "label": "Largest order fulfilled",
+      "source": "OpportunityX · Past POs"
+    },
+    {
+      "id": "turnover",
+      "category": "fin",
+      "label": "Turnover (latest FY)",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "income_trend",
+      "category": "fin",
+      "label": "Multi-year income trend",
+      "source": "MetalCapital · ITR"
+    },
+    {
+      "id": "yoy_growth",
+      "category": "fin",
+      "label": "YoY turnover growth and margin trend",
+      "source": "MetalCapital · Form 3CD"
+    },
+    {
+      "id": "monthly_turnover_gst",
+      "category": "fin",
+      "label": "Monthly turnover trend (GSTR-3B)",
+      "source": "MetalCapital · GSTR-3B"
+    },
+    {
+      "id": "net_worth",
+      "category": "fin",
+      "label": "Net worth",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "current_ratio",
+      "category": "fin",
+      "label": "Current ratio",
+      "source": "MetalCapital · CAM"
+    },
+    {
+      "id": "quick_ratio",
+      "category": "fin",
+      "label": "Quick ratio",
+      "source": "MetalCapital · CAM"
+    },
+    {
+      "id": "debt_equity",
+      "category": "fin",
+      "label": "Debt-equity ratio",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "tol_tnw",
+      "category": "fin",
+      "label": "TOL/TNW ratio",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "interest_coverage",
+      "category": "fin",
+      "label": "Interest coverage ratio",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "ebitda_margin",
+      "category": "fin",
+      "label": "EBITDA margin %",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "gross_profit_pct",
+      "category": "fin",
+      "label": "Gross profit %",
+      "source": "MetalCapital · Form 3CD"
+    },
+    {
+      "id": "net_profit_pct",
+      "category": "fin",
+      "label": "Net profit %",
+      "source": "MetalCapital · Form 3CD"
+    },
+    {
+      "id": "rota",
+      "category": "fin",
+      "label": "Return on total assets",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "stock_days",
+      "category": "fin",
+      "label": "Stock holding period (days)",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "debtor_days",
+      "category": "fin",
+      "label": "Debtors collection period (days)",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "creditor_days",
+      "category": "fin",
+      "label": "Creditors payment period (days)",
+      "source": "MetalCapital · Audited financials"
+    },
+    {
+      "id": "cash_conversion_cycle",
+      "category": "fin",
+      "label": "Cash conversion cycle",
+      "source": "MetalCapital · CAM"
+    },
+    {
+      "id": "debit_credit_ratio",
+      "category": "fin",
+      "label": "Bank debit-to-credit ratio",
+      "source": "MetalCapital · Bank statements"
+    },
+    {
+      "id": "high_value_txn",
+      "category": "fin",
+      "label": "High-value transaction flags",
+      "source": "MetalCapital · Bank statements"
+    },
+    {
+      "id": "penal_interest",
+      "category": "fin",
+      "label": "Penal interest / cheque returns",
+      "source": "MetalCapital · Bank statements"
+    },
+    {
+      "id": "existing_debt",
+      "category": "fin",
+      "label": "Existing debt obligations",
+      "source": "MetalCapital · Bank statements"
+    },
+    {
+      "id": "itc_utilisation",
+      "category": "fin",
+      "label": "GST ITC utilisation pattern",
+      "source": "MetalCapital · GSTR-3B"
+    },
+    {
+      "id": "cd_note_ratio",
+      "category": "fin",
+      "label": "Credit/debit note ratio",
+      "source": "MetalCapital · GST"
+    },
+    {
+      "id": "banking_relationships",
+      "category": "fin",
+      "label": "Banking relationships",
+      "source": "Survey"
+    },
+    {
+      "id": "collateral",
+      "category": "fin",
+      "label": "Collateral / security available",
+      "source": "Survey"
+    },
+    {
+      "id": "planned_capex",
+      "category": "fin",
+      "label": "Planned capex – next 12m",
+      "source": "Survey"
+    },
+    {
+      "id": "insurance",
+      "category": "fin",
+      "label": "Insurance coverage in place",
+      "source": "Survey"
+    },
+    {
+      "id": "iso_9001",
+      "category": "cert",
+      "label": "ISO 9001",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "iso_14001",
+      "category": "cert",
+      "label": "ISO 14001",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "iso_45001",
+      "category": "cert",
+      "label": "ISO 45001 / OHSAS 18001",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "bis_cert",
+      "category": "cert",
+      "label": "BIS certificate",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "sector_certification",
+      "category": "cert",
+      "label": "Sector-specific certifications",
+      "source": "Survey"
+    },
+    {
+      "id": "approved_vendor_oems",
+      "category": "cert",
+      "label": "Customer-approved vendor status (OEMs)",
+      "source": "Survey"
+    },
+    {
+      "id": "cert_in_process",
+      "category": "cert",
+      "label": "Certification currently under process",
+      "source": "Survey"
+    },
+    {
+      "id": "certs_renewed_12m",
+      "category": "cert",
+      "label": "Certifications renewed in last 12m",
+      "source": "Survey"
+    },
+    {
+      "id": "completion_cert",
+      "category": "cert",
+      "label": "Completion certificates",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "local_content_cert",
+      "category": "cert",
+      "label": "Local content self-certificate",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "mii_class",
+      "category": "cert",
+      "label": "MII class (Class I / II)",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "local_content_pct",
+      "category": "cert",
+      "label": "Declared local content %",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "dpiit_startup",
+      "category": "cert",
+      "label": "DPIIT startup certificate",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "zed_level",
+      "category": "cert",
+      "label": "ZED certification level",
+      "source": "OpportunityX"
+    },
+    {
+      "id": "rev_oem_pct",
+      "category": "cust",
+      "label": "Revenue split – OEM (%)",
+      "source": "Survey"
+    },
+    {
+      "id": "rev_govt_pct",
+      "category": "cust",
+      "label": "Revenue split – Government/PSU (%)",
+      "source": "Survey"
+    },
+    {
+      "id": "rev_jobwork_pct",
+      "category": "cust",
+      "label": "Revenue split – job-work (%)",
+      "source": "Survey"
+    },
+    {
+      "id": "largest_customer_years",
+      "category": "cust",
+      "label": "Years – relationship with largest customer",
+      "source": "Survey"
+    },
+    {
+      "id": "repeat_business_pct",
+      "category": "cust",
+      "label": "% repeat business (last 12m)",
+      "source": "Survey"
+    },
+    {
+      "id": "export_pct",
+      "category": "cust",
+      "label": "Export revenue (%)",
+      "source": "Survey"
+    },
+    {
+      "id": "customer_concentration",
+      "category": "cust",
+      "label": "Customer concentration",
+      "source": "MetalCapital · Bank statements"
+    },
+    {
+      "id": "top_customers",
+      "category": "cust",
+      "label": "Top customers and suppliers",
+      "source": "MetalCapital · CAM"
+    },
+    {
+      "id": "recurring_vendors",
+      "category": "cust",
+      "label": "Recurring vendor pattern",
+      "source": "MetalCapital · Bank statements"
+    },
+    {
+      "id": "client_reference",
+      "category": "cust",
+      "label": "Client reference letters",
+      "source": "OpportunityX"
+    }
+  ]
+}

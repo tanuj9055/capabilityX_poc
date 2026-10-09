@@ -1,0 +1,1766 @@
+{
+ "buckets": [
+  {
+   "id": "header",
+   "label": "RFQ details"
+  },
+  {
+   "id": "technical",
+   "label": "Technical requirements"
+  },
+  {
+   "id": "quality",
+   "label": "Quality (§6)"
+  },
+  {
+   "id": "delivery",
+   "label": "Delivery & commercial (§7–8)"
+  },
+  {
+   "id": "org",
+   "label": "Supplier organisation (§9)"
+  },
+  {
+   "id": "financial",
+   "label": "Financial capability (§10)"
+  },
+  {
+   "id": "esg",
+   "label": "ESG & continuity (§11–12)"
+  }
+ ],
+ "common_slots": [
+  {
+   "id": "buyer",
+   "label": "Issuing company",
+   "bucket": "header",
+   "type": "text",
+   "ask": true,
+   "question": "Which company is issuing this RFQ?",
+   "hint": "Your company's registered name"
+  },
+  {
+   "id": "rfq_title",
+   "label": "RFQ title / item",
+   "bucket": "header",
+   "type": "text",
+   "ask": true,
+   "question": "What should the RFQ be titled (the item being sourced)?",
+   "hint": "e.g. Steel Mounting Bracket for EV Application"
+  },
+  {
+   "id": "quantity",
+   "label": "Contract quantity",
+   "bucket": "header",
+   "type": "number",
+   "ask": true,
+   "question": "How many units do you need in total?",
+   "data_point_ids": [
+    "installed_capacity",
+    "capacity_utilisation_pct"
+   ],
+   "req": "Spare installed capacity to supply {quantity} units over {schedule_months} months",
+   "kind": "scored",
+   "unit": "units"
+  },
+  {
+   "id": "schedule_months",
+   "label": "Supply period",
+   "bucket": "header",
+   "type": "number",
+   "default": 3,
+   "ask": true,
+   "question": "Over how many months should supply run?",
+   "unit": "months"
+  },
+  {
+   "id": "issue_date",
+   "label": "Issue date",
+   "bucket": "header",
+   "type": "date",
+   "question": "RFQ issue date?"
+  },
+  {
+   "id": "quote_due",
+   "label": "Quotation due",
+   "bucket": "header",
+   "type": "date",
+   "question": "Quotation due date?"
+  },
+  {
+   "id": "contact",
+   "label": "RFQ contact",
+   "bucket": "header",
+   "type": "text",
+   "question": "Who is the RFQ contact? (name, designation, email)",
+   "hint": "e.g. Priya Kulkarni, Head Supply Chain, priya@company.com"
+  },
+  {
+   "id": "iso_9001",
+   "label": "ISO 9001 certification",
+   "bucket": "quality",
+   "type": "level",
+   "options": [
+    "Mandatory",
+    "Preferred",
+    "Not needed"
+   ],
+   "default": "Mandatory",
+   "ask": true,
+   "question": "ISO 9001 certification?",
+   "data_point_ids": [
+    "iso_9001",
+    "sector_certification"
+   ],
+   "req": "ISO 9001 certification by an accredited body",
+   "kind": "scored"
+  },
+  {
+   "id": "iatf_16949",
+   "label": "IATF 16949 certification",
+   "bucket": "quality",
+   "type": "level",
+   "options": [
+    "Mandatory",
+    "Preferred",
+    "Not needed"
+   ],
+   "default": "Not needed",
+   "question": "IATF 16949 (automotive QMS)?",
+   "data_point_ids": [
+    "sector_certification"
+   ],
+   "req": "IATF 16949 certification or demonstrated automotive QMS maturity",
+   "kind": "scored"
+  },
+  {
+   "id": "iso_14001",
+   "label": "ISO 14001 environmental management",
+   "bucket": "quality",
+   "type": "level",
+   "options": [
+    "Mandatory",
+    "Preferred",
+    "Not needed"
+   ],
+   "default": "Preferred",
+   "question": "ISO 14001?",
+   "data_point_ids": [
+    "iso_14001",
+    "sector_certification"
+   ],
+   "req": "ISO 14001 environmental management certification",
+   "kind": "scored"
+  },
+  {
+   "id": "iso_45001",
+   "label": "ISO 45001 occupational health & safety",
+   "bucket": "quality",
+   "type": "level",
+   "options": [
+    "Mandatory",
+    "Preferred",
+    "Not needed"
+   ],
+   "default": "Preferred",
+   "question": "ISO 45001?",
+   "data_point_ids": [
+    "iso_45001",
+    "sector_certification"
+   ],
+   "req": "ISO 45001 occupational health and safety certification",
+   "kind": "scored"
+  },
+  {
+   "id": "max_rejection_pct",
+   "label": "Maximum rejection / rework rate",
+   "bucket": "quality",
+   "type": "number",
+   "default": 1,
+   "question": "Maximum acceptable rejection / rework rate (%)?",
+   "data_point_ids": [
+    "rejection_rate_pct"
+   ],
+   "req": "Rejection / rework rate at or below {v}% over the last 12 months",
+   "kind": "scored",
+   "unit": "%"
+  },
+  {
+   "id": "delivery_location",
+   "label": "Delivery location",
+   "bucket": "delivery",
+   "type": "text",
+   "ask": true,
+   "question": "Where should material be delivered (city / plant)?"
+  },
+  {
+   "id": "delivery_model",
+   "label": "Delivery model",
+   "bucket": "delivery",
+   "type": "choice",
+   "options": [
+    "JIT every 3 days",
+    "Weekly call-offs",
+    "Monthly lots",
+    "Single lot"
+   ],
+   "ask": true,
+   "question": "How should deliveries be scheduled?",
+   "data_point_ids": [
+    "otd_pct"
+   ],
+   "req": "On-time delivery performance suitable for {v} supply",
+   "kind": "scored"
+  },
+  {
+   "id": "payment_days",
+   "label": "Payment terms",
+   "bucket": "delivery",
+   "type": "choice",
+   "options": [
+    "30",
+    "45",
+    "60",
+    "90"
+   ],
+   "default": "60",
+   "question": "Payment terms (days from GRN)?",
+   "data_point_ids": [
+    "cash_conversion_cycle",
+    "banking_relationships",
+    "existing_debt"
+   ],
+   "req": "Working capital and bank lines to carry {v}-day receivables",
+   "kind": "scored",
+   "unit": "days"
+  },
+  {
+   "id": "freight",
+   "label": "Freight",
+   "bucket": "delivery",
+   "type": "choice",
+   "options": [
+    "Included (FOR buyer plant)",
+    "Ex-works"
+   ],
+   "default": "Included (FOR buyer plant)",
+   "question": "Freight basis?"
+  },
+  {
+   "id": "min_years",
+   "label": "Minimum years in business",
+   "bucket": "org",
+   "type": "number",
+   "default": 5,
+   "question": "Minimum years in business?",
+   "data_point_ids": [
+    "date_incorporation",
+    "promoter_experience_yrs"
+   ],
+   "req": "At least {v} years in business with experienced management",
+   "kind": "scored",
+   "unit": "years"
+  },
+  {
+   "id": "min_employees",
+   "label": "Minimum permanent workforce",
+   "bucket": "org",
+   "type": "number",
+   "default": 20,
+   "question": "Minimum permanent employees?",
+   "data_point_ids": [
+    "employees_permanent",
+    "attrition_pct"
+   ],
+   "req": "Stable skilled workforce of at least {v} permanent employees",
+   "kind": "scored",
+   "unit": "employees"
+  },
+  {
+   "id": "concentration",
+   "label": "Customer concentration check",
+   "bucket": "org",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Check that the supplier is not over-dependent on one customer?",
+   "data_point_ids": [
+    "customer_concentration",
+    "top_customers"
+   ],
+   "req": "No excessive dependence on a single customer",
+   "kind": "scored"
+  },
+  {
+   "id": "not_blacklisted",
+   "label": "No blacklisting / debarment",
+   "bucket": "org",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Require a no-blacklisting declaration?",
+   "data_point_ids": [
+    "blacklisting"
+   ],
+   "req": "Not blacklisted or debarred by any government body or customer",
+   "kind": "mandatory"
+  },
+  {
+   "id": "min_turnover_lakh",
+   "label": "Minimum annual turnover",
+   "bucket": "financial",
+   "type": "number",
+   "question": "Minimum annual turnover (₹ lakh)?",
+   "data_point_ids": [
+    "turnover"
+   ],
+   "req": "Annual turnover of at least ₹{v} lakh (latest FY)",
+   "kind": "mandatory",
+   "unit": "₹ lakh"
+  },
+  {
+   "id": "min_current_ratio",
+   "label": "Minimum current ratio",
+   "bucket": "financial",
+   "type": "number",
+   "default": 1.2,
+   "question": "Minimum current ratio?",
+   "data_point_ids": [
+    "current_ratio"
+   ],
+   "req": "Current ratio of at least {v}",
+   "kind": "scored"
+  },
+  {
+   "id": "positive_net_worth",
+   "label": "Positive net worth",
+   "bucket": "financial",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Require positive net worth?",
+   "data_point_ids": [
+    "net_worth"
+   ],
+   "req": "Positive net worth with no material erosion",
+   "kind": "mandatory"
+  },
+  {
+   "id": "no_default",
+   "label": "No default / overdue statutory dues",
+   "bucket": "financial",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Require no loan default and no overdue statutory dues?",
+   "data_point_ids": [
+    "statutory_dues",
+    "penal_interest"
+   ],
+   "req": "No loan default, NPA, or material overdue statutory dues",
+   "kind": "mandatory"
+  },
+  {
+   "id": "tax_compliance",
+   "label": "Timely GST / ITR filing",
+   "bucket": "financial",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Check GST and ITR filing timeliness?",
+   "data_point_ids": [
+    "gst_filing_timeliness",
+    "itr_timeliness"
+   ],
+   "req": "Timely GST return and income-tax filings",
+   "kind": "scored"
+  },
+  {
+   "id": "esg_level",
+   "label": "ESG / EHS expectation",
+   "bucket": "esg",
+   "type": "choice",
+   "options": [
+    "Full ESG/EHS compliance",
+    "Basic EHS",
+    "Not evaluated"
+   ],
+   "default": "Basic EHS",
+   "question": "How strict should ESG / EHS evaluation be?",
+   "data_point_ids": [
+    "ehs_policy",
+    "labour_violation_3y",
+    "grievance_mechanism"
+   ],
+   "req": "{v}: documented EHS policy, no labour-law violations, worker grievance mechanism",
+   "kind": "scored"
+  },
+  {
+   "id": "continuity",
+   "label": "Business continuity & insurance",
+   "bucket": "esg",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Require insurance cover and a business-continuity plan?",
+   "data_point_ids": [
+    "insurance"
+   ],
+   "req": "Insurance coverage and business-continuity arrangements in place",
+   "kind": "scored"
+  }
+ ],
+ "blocks": [
+  {
+   "t": "title",
+   "text": "Request for Quotation"
+  },
+  {
+   "t": "sub",
+   "text": "{{rfq_title}}"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "RFQ detail",
+     "Requirement"
+    ],
+    [
+     "Issuing company",
+     "{{buyer}}"
+    ],
+    [
+     "RFQ reference",
+     "{{rfq_ref}}"
+    ],
+    [
+     "Issue date",
+     "{{issue_date}}"
+    ],
+    [
+     "Quotation due",
+     "{{quote_due}} by 17:00 IST"
+    ],
+    [
+     "Contract quantity",
+     "{{quantity}} units over {{schedule_months}} months"
+    ],
+    [
+     "Delivery model",
+     "{{delivery_model}} to {{delivery_location}}"
+    ],
+    [
+     "Commercial terms",
+     "INR, GST extra, freight {{freight}}, payment {{payment_days}} days"
+    ],
+    [
+     "RFQ contact",
+     "{{contact}}"
+    ]
+   ]
+  },
+  {
+   "t": "p",
+   "text": "This document invites qualified {{supplier_type}} to submit a complete technical and commercial quotation for {{rfq_title}}. The selected supplier must demonstrate capable manufacturing processes, stable quality systems, adequate liquidity for a {{payment_days}}-day payment cycle, and reliable {{delivery_model}} supply."
+  },
+  {
+   "t": "p",
+   "text": "The released drawing, approved material specification and purchase order will prevail over this document where expressly stated."
+  },
+  {
+   "t": "h1",
+   "text": "Document control"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Revision",
+     "Date",
+     "Description",
+     "Owner"
+    ],
+    [
+     "0",
+     "{{issue_date}}",
+     "RFQ issued for supplier quotation",
+     "Strategic Sourcing"
+    ]
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "Submission instructions"
+  },
+  {
+   "t": "num",
+   "text": "Submit one signed PDF response and one editable commercial workbook by email to the RFQ contact before the quotation deadline."
+  },
+  {
+   "t": "num",
+   "text": "Use the section numbering and response tables in this RFQ. Clearly identify every exception, assumption and dependency in the deviation schedule."
+  },
+  {
+   "t": "num",
+   "text": "Quote in Indian rupees. Show material, conversion, finishing, packaging, freight, tooling and taxes separately."
+  },
+  {
+   "t": "num",
+   "text": "Provide documentary evidence requested in the bid checklist. Redacted documents may be accepted where commercially sensitive, subject to buyer review."
+  },
+  {
+   "t": "num",
+   "text": "Direct technical and commercial questions only to the RFQ contact."
+  },
+  {
+   "t": "h1",
+   "text": "RFQ contents"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Section",
+     "Topic"
+    ],
+    [
+     "1",
+     "Purpose and sourcing context"
+    ],
+    [
+     "2",
+     "Scope of supply"
+    ],
+    [
+     "3",
+     "Component and technical requirements"
+    ],
+    [
+     "4",
+     "Manufacturing process and equipment"
+    ],
+    [
+     "5",
+     "Capacity and production readiness"
+    ],
+    [
+     "6",
+     "Quality management and product assurance"
+    ],
+    [
+     "7",
+     "Delivery logistics and packaging"
+    ],
+    [
+     "8",
+     "Commercial and payment terms"
+    ],
+    [
+     "9",
+     "Supplier organization and business health"
+    ],
+    [
+     "10",
+     "Financial capability and liquidity"
+    ],
+    [
+     "11",
+     "ESG EHS and responsible business"
+    ],
+    [
+     "12",
+     "Information security and business continuity"
+    ],
+    [
+     "13",
+     "Evaluation and award process"
+    ],
+    [
+     "14",
+     "General RFQ terms"
+    ],
+    [
+     "A",
+     "Supplier response schedules"
+    ],
+    [
+     "B",
+     "Quotation and cost breakdown"
+    ],
+    [
+     "C",
+     "Compliance matrix and declarations"
+    ],
+    [
+     "D",
+     "Bid submission checklist"
+    ]
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "1 Purpose and sourcing context"
+  },
+  {
+   "t": "p",
+   "text": "{{buyer}} seeks a production supplier for {{rfq_title}}. {{purpose}}"
+  },
+  {
+   "t": "p",
+   "text": "The sourcing objective is to establish a reliable, cost-competitive and quality-controlled supply arrangement for {{quantity}} units over an initial {{schedule_months}}-month period. The award may be extended or scaled subject to performance and mutual agreement; no forecast beyond the purchase order is guaranteed."
+  },
+  {
+   "t": "h1",
+   "text": "2 Scope of supply"
+  },
+  {
+   "t": "include",
+   "key": "scope"
+  },
+  {
+   "t": "bullet",
+   "text": "Ongoing quality control, lot traceability, change management, corrective action and capacity reporting."
+  },
+  {
+   "t": "bullet",
+   "text": "Support for buyer audits, trials, cost-reduction workshops and continuous improvement."
+  },
+  {
+   "t": "h2",
+   "text": "2.1 Supply period and quantity"
+  },
+  {
+   "t": "supply_table"
+  },
+  {
+   "t": "h1",
+   "text": "3 Component and technical requirements"
+  },
+  {
+   "t": "h2",
+   "text": "3.1 Indicative component definition"
+  },
+  {
+   "t": "include",
+   "key": "technical"
+  },
+  {
+   "t": "h2",
+   "text": "3.2 Drawing and specification control"
+  },
+  {
+   "t": "bullet",
+   "text": "The buyer will release the controlled drawing / specification to shortlisted suppliers under confidentiality obligations."
+  },
+  {
+   "t": "bullet",
+   "text": "No material, source, process, tooling, location or sub-tier change is permitted after approval without prior written buyer authorization."
+  },
+  {
+   "t": "bullet",
+   "text": "Supplier shall perform a manufacturing-feasibility review and identify technical risks in the quotation."
+  },
+  {
+   "t": "h2",
+   "text": "3.3 Technical deliverables"
+  },
+  {
+   "t": "include",
+   "key": "deliverables"
+  },
+  {
+   "t": "h1",
+   "text": "4 Manufacturing process and equipment"
+  },
+  {
+   "t": "p",
+   "text": "The supplier shall own or have securely controlled access to equipment capable of producing the item consistently at the quoted rate. All proposed outsourced processes must be disclosed with the sub-tier name, location, certification and control method."
+  },
+  {
+   "t": "h2",
+   "text": "4.1 Required process capability"
+  },
+  {
+   "t": "include",
+   "key": "process"
+  },
+  {
+   "t": "h1",
+   "text": "5 Capacity and production readiness"
+  },
+  {
+   "t": "bullet",
+   "text": "Demonstrate capacity for {{quantity}} units over {{schedule_months}} months and at least 20 percent short-term upside without deterioration in quality or delivery."
+  },
+  {
+   "t": "bullet",
+   "text": "State cycle time, planned shifts, staffing, changeover time, scrap assumption and bottleneck operation."
+  },
+  {
+   "t": "bullet",
+   "text": "Identify other programmes sharing key equipment and quantify available capacity during the proposed production window."
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Readiness milestone",
+     "Supplier proposed date",
+     "Evidence or owner"
+    ],
+    [
+     "Feasibility closure",
+     "",
+     ""
+    ],
+    [
+     "Tooling / setup complete",
+     "",
+     ""
+    ],
+    [
+     "First-off trial",
+     "",
+     ""
+    ],
+    [
+     "Sample / first article approval",
+     "",
+     ""
+    ],
+    [
+     "Start of production",
+     "",
+     ""
+    ],
+    [
+     "First delivery",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "6 Quality management and product assurance"
+  },
+  {
+   "t": "h2",
+   "text": "6.1 Management system"
+  },
+  {
+   "t": "cert_table"
+  },
+  {
+   "t": "h2",
+   "text": "6.2 Inspection and performance"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Control",
+     "Expectation"
+    ],
+    [
+     "Rejection / rework",
+     "At or below {{max_rejection_pct}}% over the last 12 months"
+    ],
+    [
+     "First-off and last-off",
+     "Documented approval at start, after changeover, tool intervention or restart"
+    ],
+    [
+     "Final inspection",
+     "Identity, quantity, key dimensions, appearance, marking and packaging"
+    ],
+    [
+     "Traceability",
+     "Each lot traceable to raw-material heat / batch, production date, machine and inspection"
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "6.3 Nonconformance and corrective action"
+  },
+  {
+   "t": "bullet",
+   "text": "Containment within 24 hours, initial root-cause response within three working days and completed 8D normally within ten working days."
+  },
+  {
+   "t": "bullet",
+   "text": "No use-as-is, repair or rework is permitted without written concession."
+  },
+  {
+   "t": "h1",
+   "text": "7 Delivery logistics and packaging"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Parameter",
+     "Requirement"
+    ],
+    [
+     "Delivery location",
+     "{{delivery_location}}; final ship-to address in purchase order"
+    ],
+    [
+     "Frequency",
+     "{{delivery_model}}"
+    ],
+    [
+     "Delivery performance",
+     "Target 100 percent on-time and in-full against the confirmed window"
+    ],
+    [
+     "Advance shipment notice",
+     "Electronic ASN before dispatch with PO, part, quantity, lot and ETA"
+    ]
+   ]
+  },
+  {
+   "t": "bullet",
+   "text": "Use packaging that prevents corrosion, deformation and damage through transport and storage; obtain buyer approval for pack quantity and labelling."
+  },
+  {
+   "t": "h1",
+   "text": "8 Commercial and payment terms"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Commercial item",
+     "RFQ requirement"
+    ],
+    [
+     "Currency",
+     "Indian rupees"
+    ],
+    [
+     "Price basis",
+     "Firm for the initial {{schedule_months}}-month programme"
+    ],
+    [
+     "Freight",
+     "{{freight}}"
+    ],
+    [
+     "GST and statutory taxes",
+     "Shown separately at applicable rates"
+    ],
+    [
+     "Payment",
+     "{{payment_days}} days from receipt of correct tax invoice and accepted goods (GRN)"
+    ],
+    [
+     "Quotation validity",
+     "Minimum 120 days from quotation deadline"
+    ],
+    [
+     "Tooling",
+     "One-time cost shown separately with milestone and ownership proposal"
+    ]
+   ]
+  },
+  {
+   "t": "p",
+   "text": "The supplier shall complete Annexure B and provide a transparent cost model."
+  },
+  {
+   "t": "h1",
+   "text": "9 Supplier organization and business health"
+  },
+  {
+   "t": "p",
+   "text": "The buyer will assess whether the supplier has a stable organization capable of supporting this programme."
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Assessment area",
+     "Requirement"
+    ],
+    [
+     "Years in business",
+     "At least {{min_years}} years"
+    ],
+    [
+     "Workforce",
+     "At least {{min_employees}} permanent employees; attrition and skills disclosed"
+    ],
+    [
+     "Customer concentration",
+     "Top five customer shares disclosed; no excessive single-customer dependence"
+    ],
+    [
+     "Debarment",
+     "No blacklisting or debarment (declaration required: {{not_blacklisted}})"
+    ]
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "10 Financial capability and liquidity"
+  },
+  {
+   "t": "p",
+   "text": "The supplier must have adequate liquidity to purchase material, operate production and carry receivables under a {{payment_days}}-day payment cycle."
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Area",
+     "Expectation"
+    ],
+    [
+     "Turnover",
+     "At least ₹{{min_turnover_lakh}} lakh in the latest audited year"
+    ],
+    [
+     "Liquidity",
+     "Current ratio at least {{min_current_ratio}} and positive working capital"
+    ],
+    [
+     "Net worth",
+     "Positive net worth required: {{positive_net_worth}}"
+    ],
+    [
+     "Defaults and statutory dues",
+     "No default / overdue dues required: {{no_default}}"
+    ],
+    [
+     "Tax compliance",
+     "Timely GST and ITR filings checked: {{tax_compliance}}"
+    ]
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "11 ESG EHS and responsible business"
+  },
+  {
+   "t": "p",
+   "text": "Evaluation level: {{esg_level}}."
+  },
+  {
+   "t": "bullet",
+   "text": "Maintain all required environmental consents and manage hazardous waste through authorised handlers."
+  },
+  {
+   "t": "bullet",
+   "text": "Maintain risk assessments, machine guarding, PPE, training and incident reporting."
+  },
+  {
+   "t": "bullet",
+   "text": "Prohibit child labour, forced labour, harassment and discrimination; maintain a worker grievance mechanism."
+  },
+  {
+   "t": "bullet",
+   "text": "Maintain controls against bribery, fraud and conflicts of interest."
+  },
+  {
+   "t": "h1",
+   "text": "12 Information security and business continuity"
+  },
+  {
+   "t": "p",
+   "text": "Restrict drawings, specifications and pricing to authorised personnel. Submit a site business-continuity plan covering power failure, equipment breakdown, labour disruption and logistics interruption, with insurance coverage (required: {{continuity}})."
+  },
+  {
+   "t": "h1",
+   "text": "13 Evaluation and award process"
+  },
+  {
+   "t": "weights_table"
+  },
+  {
+   "t": "p",
+   "text": "Mandatory requirements and unacceptable risk may override aggregate score. The buyer may conduct clarification meetings, plant audits, sample trials and financial diligence."
+  },
+  {
+   "t": "h1",
+   "text": "14 General RFQ terms"
+  },
+  {
+   "t": "num",
+   "text": "This RFQ is an invitation to quote and does not constitute a purchase order or obligation to award business."
+  },
+  {
+   "t": "num",
+   "text": "The buyer may accept or reject any response, negotiate with one or more suppliers, modify or cancel the RFQ, or divide the award."
+  },
+  {
+   "t": "num",
+   "text": "No deviation is effective unless expressly accepted in the purchase order."
+  },
+  {
+   "t": "num",
+   "text": "The supplier shall comply with applicable Indian laws and regulatory requirements."
+  },
+  {
+   "t": "num",
+   "text": "Proposed subcontracting requires disclosure and does not relieve the supplier of responsibility for quality, delivery, compliance or confidentiality."
+  },
+  {
+   "t": "h1",
+   "text": "Annexure A Supplier response schedules"
+  },
+  {
+   "t": "h2",
+   "text": "A1 Supplier identity and contacts"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Field",
+     "Response"
+    ],
+    [
+     "Legal company name",
+     "Supplier response"
+    ],
+    [
+     "Registered office",
+     "Supplier response"
+    ],
+    [
+     "Manufacturing site proposed",
+     "Supplier response"
+    ],
+    [
+     "Udyam / CIN",
+     "Supplier response"
+    ],
+    [
+     "GSTIN",
+     "Supplier response"
+    ],
+    [
+     "Year established",
+     "Supplier response"
+    ],
+    [
+     "Ownership type",
+     "Supplier response"
+    ],
+    [
+     "Primary RFQ contact",
+     "Supplier response"
+    ],
+    [
+     "Quality contact",
+     "Supplier response"
+    ],
+    [
+     "Finance contact",
+     "Supplier response"
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "A2 Organization and experience"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Question",
+     "Supplier response and evidence reference"
+    ],
+    [
+     "Describe relevant experience in {{supplier_type}}.",
+     ""
+    ],
+    [
+     "List programmes of comparable complexity completed in the last five years.",
+     ""
+    ],
+    [
+     "Provide top five customers and approximate percentage of annual sales.",
+     ""
+    ],
+    [
+     "State current permanent and contract headcount, shifts and attrition.",
+     ""
+    ],
+    [
+     "Disclose material litigation, regulatory notices, debarment or insolvency matters.",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "A3 Customer references"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Customer",
+     "Item or process",
+     "Annual volume",
+     "Supply period",
+     "Reference contact"
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "A4 Manufacturing equipment"
+  },
+  {
+   "t": "include",
+   "key": "equipment"
+  },
+  {
+   "t": "h2",
+   "text": "A5 Inspection and testing equipment"
+  },
+  {
+   "t": "include",
+   "key": "gauges"
+  },
+  {
+   "t": "h2",
+   "text": "A6 Proposed manufacturing route"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Step",
+     "Operation",
+     "Machine or source",
+     "Key controls",
+     "In-house or sub-tier"
+    ],
+    [
+     "1",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "2",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "3",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "4",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "5",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "6",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "A7 Capacity and delivery plan"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Capacity input",
+     "Supplier response"
+    ],
+    [
+     "Installed capacity (units/month)",
+     ""
+    ],
+    [
+     "Current utilisation",
+     ""
+    ],
+    [
+     "Planned output for this RFQ",
+     ""
+    ],
+    [
+     "Maximum output with 20 percent surge",
+     ""
+    ],
+    [
+     "Expected scrap and rework percentage",
+     ""
+    ],
+    [
+     "Transport mode and transit time",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "A8 Certification and quality performance"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Item",
+     "Certificate / metric",
+     "Evidence attached"
+    ],
+    [
+     "ISO 9001",
+     "",
+     "Yes or No"
+    ],
+    [
+     "IATF 16949",
+     "",
+     "Yes or No"
+    ],
+    [
+     "ISO 14001",
+     "",
+     "Yes or No"
+    ],
+    [
+     "ISO 45001",
+     "",
+     "Yes or No"
+    ],
+    [
+     "BIS / product certification",
+     "",
+     "Yes or No"
+    ],
+    [
+     "Customer PPM for latest 12 months",
+     "",
+     "Yes or No"
+    ],
+    [
+     "On-time delivery for latest 12 months",
+     "",
+     "Yes or No"
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "A9 Financial information"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Metric INR lakh",
+     "FY 2023-24",
+     "FY 2024-25",
+     "FY 2025-26"
+    ],
+    [
+     "Revenue",
+     "",
+     "",
+     ""
+    ],
+    [
+     "EBITDA",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Profit after tax",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Net worth",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Total debt",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Current ratio",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Debt equity",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Interest coverage",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Receivable days",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "A10 ESG EHS and ethics questionnaire"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Question",
+     "Yes No NA",
+     "Details and evidence"
+    ],
+    [
+     "Are all environmental and operating consents valid for the proposed site",
+     "",
+     ""
+    ],
+    [
+     "Are hazardous materials and waste managed through authorized channels",
+     "",
+     ""
+    ],
+    [
+     "Have any fatalities, major injuries or regulatory notices occurred in the last three years",
+     "",
+     ""
+    ],
+    [
+     "Is there a worker grievance mechanism with non-retaliation protection",
+     "",
+     ""
+    ],
+    [
+     "Are anti-bribery and whistleblowing controls in place",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "A11 Business continuity"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Topic",
+     "Supplier response"
+    ],
+    [
+     "Recovery time for bottleneck operation",
+     ""
+    ],
+    [
+     "Alternate site or equipment",
+     ""
+    ],
+    [
+     "Critical sub-tier dependency and backup source",
+     ""
+    ],
+    [
+     "Insurance types, limits and validity",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "Annexure B Quotation and cost breakdown"
+  },
+  {
+   "t": "h2",
+   "text": "B1 Unit price quotation"
+  },
+  {
+   "t": "include",
+   "key": "cost"
+  },
+  {
+   "t": "h2",
+   "text": "B2 Material and productivity assumptions"
+  },
+  {
+   "t": "include",
+   "key": "assumptions"
+  },
+  {
+   "t": "h2",
+   "text": "B3 One-time costs"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Item",
+     "Amount INR",
+     "Lead time",
+     "Ownership"
+    ],
+    [
+     "Tooling / dies / patterns",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Fixtures and gauges",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Development and trials",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Other",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "B4 Commercial summary"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Field",
+     "Response"
+    ],
+    [
+     "Quoted delivered unit price before GST",
+     "Supplier response"
+    ],
+    [
+     "Total value for {{quantity}} units before GST",
+     "Supplier response"
+    ],
+    [
+     "Total one-time cost",
+     "Supplier response"
+    ],
+    [
+     "Quotation validity",
+     "Supplier response"
+    ],
+    [
+     "Payment terms accepted or deviation",
+     "Supplier response"
+    ],
+    [
+     "MOQ",
+     "Supplier response"
+    ]
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "Annexure C Compliance matrix and declarations"
+  },
+  {
+   "t": "h2",
+   "text": "C1 Requirement compliance"
+  },
+  {
+   "t": "compliance_table"
+  },
+  {
+   "t": "h2",
+   "text": "C2 Deviation schedule"
+  },
+  {
+   "t": "p",
+   "text": "List every technical, commercial, timing, quality, logistics or legal deviation. If blank, the supplier is deemed to have quoted without deviation."
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "RFQ section",
+     "Requirement",
+     "Supplier deviation",
+     "Reason",
+     "Proposed alternative"
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "text": "C3 Supplier declaration"
+  },
+  {
+   "t": "p",
+   "text": "We confirm that the information submitted is complete and accurate; that we have disclosed all material assumptions and deviations; and that we understand this RFQ does not create an obligation on {{buyer}} to place an order."
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "Field",
+     "Response"
+    ],
+    [
+     "Authorized signatory name",
+     "Supplier response"
+    ],
+    [
+     "Designation",
+     "Supplier response"
+    ],
+    [
+     "Company",
+     "Supplier response"
+    ],
+    [
+     "Signature",
+     "Supplier response"
+    ],
+    [
+     "Date",
+     "Supplier response"
+    ],
+    [
+     "Company seal",
+     "Supplier response"
+    ]
+   ]
+  },
+  {
+   "t": "h1",
+   "text": "Annexure D Bid submission checklist"
+  },
+  {
+   "t": "table",
+   "header": true,
+   "rows": [
+    [
+     "No",
+     "Submission item",
+     "Attached",
+     "Document reference"
+    ],
+    [
+     "1",
+     "Signed RFQ cover and supplier declaration",
+     "Yes or No",
+     ""
+    ],
+    [
+     "2",
+     "Completed compliance and deviation schedules",
+     "Yes or No",
+     ""
+    ],
+    [
+     "3",
+     "Process flow and feasibility review",
+     "Yes or No",
+     ""
+    ],
+    [
+     "4",
+     "Equipment list relevant to proposed line",
+     "Yes or No",
+     ""
+    ],
+    [
+     "5",
+     "Capacity calculation and delivery plan",
+     "Yes or No",
+     ""
+    ],
+    [
+     "6",
+     "ISO / product certificates as applicable",
+     "Yes or No",
+     ""
+    ],
+    [
+     "7",
+     "Latest customer quality and delivery performance",
+     "Yes or No",
+     ""
+    ],
+    [
+     "8",
+     "Audited financial statements for three years",
+     "Yes or No",
+     ""
+    ],
+    [
+     "9",
+     "Organization chart and programme team",
+     "Yes or No",
+     ""
+    ],
+    [
+     "10",
+     "Customer references",
+     "Yes or No",
+     ""
+    ],
+    [
+     "11",
+     "ESG EHS and ethics questionnaire with evidence",
+     "Yes or No",
+     ""
+    ],
+    [
+     "12",
+     "Unit price cost breakdown and one-time costs",
+     "Yes or No",
+     ""
+    ],
+    [
+     "13",
+     "All subcontractors and special-process sources disclosed",
+     "Yes or No",
+     ""
+    ]
+   ]
+  }
+ ]
+}

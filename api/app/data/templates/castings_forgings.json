@@ -1,0 +1,472 @@
+{
+ "id": "castings_forgings",
+ "name": "Castings / forgings",
+ "description": "Sand / investment / die castings and open / closed-die forgings, with or without machining.",
+ "keywords": [
+  "casting",
+  "forging",
+  "foundry",
+  "die cast",
+  "investment casting",
+  "SG iron",
+  "grey iron",
+  "forged",
+  "pattern"
+ ],
+ "supplier_type": "foundries and forging suppliers",
+ "purpose": "The part is produced by casting or forging and finished to the released drawing.",
+ "defaults": {
+  "min_turnover_lakh": 300
+ },
+ "weights": [
+  [
+   "Process capability and metallurgy",
+   30
+  ],
+  [
+   "Quality, NDT and testing",
+   25
+  ],
+  [
+   "Commercial competitiveness",
+   20
+  ],
+  [
+   "Capacity and delivery",
+   10
+  ],
+  [
+   "Financial health",
+   10
+  ],
+  [
+   "Organization and ESG",
+   5
+  ]
+ ],
+ "slots": [
+  {
+   "id": "product_line",
+   "label": "Supplier already makes this product",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Must the supplier already manufacture castings or forgings?",
+   "data_point_ids": [
+    "key_machinery",
+    "nic_codes",
+    "hsn_products"
+   ],
+   "req": "Already manufactures castings or forgings (NIC codes / product range / machinery)",
+   "kind": "mandatory"
+  },
+  {
+   "id": "part_desc",
+   "label": "Component description",
+   "bucket": "technical",
+   "type": "text",
+   "ask": true,
+   "question": "Briefly describe the cast / forged part."
+  },
+  {
+   "id": "process",
+   "label": "Process",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Sand casting",
+    "Investment casting",
+    "Pressure die casting",
+    "Closed-die forging",
+    "Open-die forging"
+   ],
+   "ask": true,
+   "question": "Casting or forging process?",
+   "data_point_ids": [
+    "key_machinery"
+   ],
+   "req": "In-house {v} facility",
+   "kind": "mandatory"
+  },
+  {
+   "id": "material",
+   "label": "Material grade",
+   "bucket": "technical",
+   "type": "text",
+   "ask": true,
+   "question": "Material grade (e.g. SG 500/7, FG 260, EN8, C45)?",
+   "data_point_ids": [
+    "hsn_products"
+   ],
+   "req": "Proven production in {v}",
+   "kind": "scored"
+  },
+  {
+   "id": "weight_kg",
+   "label": "Part weight",
+   "bucket": "technical",
+   "type": "number",
+   "ask": true,
+   "question": "Approximate part weight (kg)?",
+   "unit": "kg"
+  },
+  {
+   "id": "machining",
+   "label": "Machining required",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Yes",
+    "No"
+   ],
+   "default": "Yes",
+   "question": "Is machining required?",
+   "data_point_ids": [
+    "inhouse_vs_outsourced"
+   ],
+   "req": "Machining in-house or through a controlled sub-tier (required: {v})",
+   "kind": "scored"
+  },
+  {
+   "id": "ndt",
+   "label": "NDT",
+   "bucket": "technical",
+   "type": "multi",
+   "options": [
+    "UT",
+    "MPI",
+    "Radiography",
+    "Dye penetrant"
+   ],
+   "default": [
+    "MPI"
+   ],
+   "question": "Which NDT methods are required?",
+   "data_point_ids": [
+    "testing_equipment"
+   ],
+   "req": "NDT and metallurgical testing capability ({v})",
+   "kind": "scored"
+  },
+  {
+   "id": "sector",
+   "label": "Sector experience",
+   "bucket": "technical",
+   "type": "choice",
+   "options": [
+    "Automotive / EV",
+    "Electrical & power",
+    "Railways",
+    "Defence",
+    "General engineering"
+   ],
+   "default": "General engineering",
+   "question": "Which industry experience should the supplier have?",
+   "data_point_ids": [
+    "approved_vendor_oems",
+    "client_reference"
+   ],
+   "req": "Proven supply track record to {v} customers",
+   "kind": "scored"
+  }
+ ],
+ "blocks": {
+  "scope": [
+   {
+    "t": "bullet",
+    "text": "Pattern / die development and {{process}} of {{material}}."
+   },
+   {
+    "t": "bullet",
+    "text": "Heat treatment, fettling and machining (required: {{machining}})."
+   },
+   {
+    "t": "bullet",
+    "text": "NDT ({{ndt}}), chemical and mechanical testing, packaging and delivery."
+   }
+  ],
+  "technical": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Attribute",
+      "Indicative requirement"
+     ],
+     [
+      "Component",
+      "{{part_desc}}"
+     ],
+     [
+      "Process",
+      "{{process}}"
+     ],
+     [
+      "Material",
+      "{{material}}"
+     ],
+     [
+      "Weight",
+      "{{weight_kg}} kg approx."
+     ],
+     [
+      "Machining",
+      "{{machining}}"
+     ],
+     [
+      "NDT",
+      "{{ndt}}"
+     ]
+    ]
+   }
+  ],
+  "deliverables": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Deliverable",
+      "Minimum requirement",
+      "Timing"
+     ],
+     [
+      "Methoding / simulation",
+      "Gating or die design review",
+      "Before tooling"
+     ],
+     [
+      "First article",
+      "Dimensional, chemical, mechanical and NDT report",
+      "Before production"
+     ],
+     [
+      "Certificates",
+      "Heat-wise chemistry and mechanical properties",
+      "Each lot"
+     ]
+    ]
+   }
+  ],
+  "process": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Process area",
+      "Expected capability",
+      "Evidence required"
+     ],
+     [
+      "Melting / heating",
+      "Induction furnace or forging furnace with temperature control",
+      "Equipment list"
+     ],
+     [
+      "Moulding / forging",
+      "{{process}} line sized for {{weight_kg}} kg parts",
+      "Line details"
+     ],
+     [
+      "Testing",
+      "Spectrometer, UTM, hardness, NDT ({{ndt}})",
+      "Lab equipment list"
+     ]
+    ]
+   }
+  ],
+  "equipment": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Equipment",
+      "Make model and year",
+      "Capacity or accuracy",
+      "Quantity",
+      "Owned or outsourced"
+     ],
+     [
+      "Furnaces",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Moulding line / forging hammer or press",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Fettling and shot blasting",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Machining centres",
+      "",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "gauges": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Gauge or equipment",
+      "Range / accuracy",
+      "Quantity",
+      "Calibration status"
+     ],
+     [
+      "Spectrometer",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Universal testing machine",
+      "",
+      "",
+      ""
+     ],
+     [
+      "NDT equipment",
+      "",
+      "",
+      ""
+     ],
+     [
+      "CMM / gauges",
+      "",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "cost": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Cost element",
+      "INR per unit",
+      "Basis or assumption"
+     ],
+     [
+      "Metal at poured / input weight",
+      "",
+      ""
+     ],
+     [
+      "Melting / forging conversion",
+      "",
+      ""
+     ],
+     [
+      "Fettling / trimming",
+      "",
+      ""
+     ],
+     [
+      "Heat treatment",
+      "",
+      ""
+     ],
+     [
+      "Machining",
+      "",
+      ""
+     ],
+     [
+      "NDT and testing",
+      "",
+      ""
+     ],
+     [
+      "Packaging",
+      "",
+      ""
+     ],
+     [
+      "Freight to buyer plant",
+      "",
+      ""
+     ],
+     [
+      "Overheads",
+      "",
+      ""
+     ],
+     [
+      "Profit",
+      "",
+      ""
+     ],
+     [
+      "Delivered unit price before GST",
+      "",
+      ""
+     ],
+     [
+      "GST rate",
+      "",
+      ""
+     ]
+    ]
+   }
+  ],
+  "assumptions": [
+   {
+    "t": "table",
+    "header": true,
+    "rows": [
+     [
+      "Input",
+      "Supplier value",
+      "Notes"
+     ],
+     [
+      "Material grade",
+      "",
+      ""
+     ],
+     [
+      "Poured / input weight",
+      "",
+      ""
+     ],
+     [
+      "Yield percentage",
+      "",
+      ""
+     ],
+     [
+      "Batch size",
+      "",
+      ""
+     ]
+    ]
+   }
+  ]
+ }
+}

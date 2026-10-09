@@ -1,0 +1,7 @@
+**/node_modules
+**/__pycache__
+web/dist
+api/.env
+**/*credentials*.json
+api/app/data/rfqs/*
+api/app/data/quotes/*
