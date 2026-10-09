@@ -6,3 +6,4 @@ api/app/data/rfqs/*
 !api/app/data/rfqs/.gitkeep
 api/app/data/quotes/*
 !api/app/data/quotes/.gitkeep
+**/*credentials*.json
