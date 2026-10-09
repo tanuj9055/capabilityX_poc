@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { Component, useState } from 'react'
+import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { LogOut, Plus } from 'lucide-react'
 import { getSession, setSession } from './api'
 import Login from './pages/Login.jsx'
@@ -18,6 +18,7 @@ import QuoteRequest from './pages/seller/QuoteRequest.jsx'
 export default function App() {
   const [session, setS] = useState(getSession)
   const nav = useNavigate()
+  const loc = useLocation()
   const logout = () => { setSession(null); setS(null); nav('/') }
   const buyer = session?.role === 'buyer'
 
@@ -40,6 +41,7 @@ export default function App() {
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-6">
+        <PageErrorBoundary key={loc.pathname}>
         {!session ? <Login onLogin={(s) => { setS(s); nav('/') }} /> : buyer ? (
           <Routes>
             <Route path="/" element={<Home />} />
@@ -60,7 +62,25 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         )}
+        </PageErrorBoundary>
       </main>
     </div>
   )
+}
+
+// A render error in one page shows a message instead of blanking the app; keyed on the path, so
+// navigating (or Back) resets it.
+class PageErrorBoundary extends Component {
+  state = { error: null }
+  static getDerivedStateFromError(error) { return { error } }
+  render() {
+    if (!this.state.error) return this.props.children
+    return (
+      <div className="card p-6 text-sm">
+        <p className="font-medium text-red-700">This page hit an error and couldn't be shown.</p>
+        <p className="mt-1 text-slate-500">{String(this.state.error.message || this.state.error)}</p>
+        <Link to="/" className="btn-ghost mt-4 inline-flex">Back to home</Link>
+      </div>
+    )
+  }
 }

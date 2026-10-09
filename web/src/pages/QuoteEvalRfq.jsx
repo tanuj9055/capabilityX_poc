@@ -204,7 +204,7 @@ export default function QuoteEvalRfq() {
 }
 
 function CmpRow({ k, qs, f, best }) {
-  const vals = best ? qs.map(best).filter(v => v != null && v > 0) : []
+  const vals = best ? qs.map(r => best(r.quotation)).filter(v => v != null && v > 0) : []
   const min = vals.length > 1 ? Math.min(...vals) : null
   return (
     <tr>
