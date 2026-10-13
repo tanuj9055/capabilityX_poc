@@ -99,7 +99,7 @@ def list_templates():
 
 @app.get("/api/sellers")
 def list_sellers():
-    return [{k: s[k] for k in ("id", "name", "city", "category", "category_label", "profile")}
+    return [{k: s[k] for k in ("id", "name", "city", "category", "category_label", "profile", "values")}
             for s in store.sellers()]
 
 
@@ -698,8 +698,12 @@ def _editable(q: dict) -> None:
 
 @app.get("/api/seller/me")
 def seller_me(h: dict = Depends(_session)):
-    s = store.seller(_user("seller", h)["id"])
-    return {k: s[k] for k in ("id", "name", "city", "category_label", "profile")}
+    if h.get("role") != "seller":
+        return None
+    s = store.seller((h.get("id") or "").strip())
+    if not s:
+        return None
+    return {k: s[k] for k in ("id", "name", "city", "category", "category_label", "profile", "values")}
 
 
 @app.get("/api/seller/requests")
