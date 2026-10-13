@@ -46,7 +46,8 @@ export default function QuoteRequest() {
         </div>
       </div>
 
-      {q.outcome === 'accepted' && <div className="rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">The buyer <b>accepted</b> your quotation.</div>}
+      {q.outcome === 'accepted' && <div className="flex flex-wrap items-center gap-2 rounded-md border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">The buyer <b>accepted</b> your quotation and issued a purchase order.
+        {q.po_id && <Link to={`/pos/${q.po_id}`} className="btn-primary ml-auto py-1 text-xs">View purchase order</Link>}</div>}
       {q.outcome === 'not_selected' && <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">The buyer chose another supplier for this RFQ.</div>}
       {q.status === 'declined' && <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm">You declined this request: <i>{q.decline_reason}</i></div>}
       {q.status === 'expired' && <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">The quote deadline has passed.</div>}

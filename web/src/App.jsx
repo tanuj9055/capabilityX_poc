@@ -1,7 +1,7 @@
-import { Component, useState } from 'react'
+import { Component, useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { LogOut, Plus } from 'lucide-react'
-import { getSession, setSession } from './api'
+import { api, getSession, setSession } from './api'
 import Login from './pages/Login.jsx'
 import Home from './pages/Home.jsx'
 import NewRfq from './pages/NewRfq.jsx'
@@ -14,6 +14,10 @@ import QuoteEvaluation from './pages/QuoteEvaluation.jsx'
 import QuoteEvalRfq from './pages/QuoteEvalRfq.jsx'
 import QuoteRequests from './pages/seller/QuoteRequests.jsx'
 import QuoteRequest from './pages/seller/QuoteRequest.jsx'
+import PurchaseOrder from './pages/PurchaseOrder.jsx'
+import Profile from './pages/Profile.jsx'
+import PurchaseOrders from './pages/seller/PurchaseOrders.jsx'
+import PurchaseOrderView from './pages/seller/PurchaseOrderView.jsx'
 
 export default function App() {
   const [session, setS] = useState(getSession)
@@ -21,6 +25,10 @@ export default function App() {
   const loc = useLocation()
   const logout = () => { setSession(null); setS(null); nav('/') }
   const buyer = session?.role === 'buyer'
+  // supplier notification: unread purchase orders, refreshed on every page change
+  const [unread, setUnread] = useState(0)
+  const refreshUnread = () => api.get('/seller/pos').then(r => setUnread(r.filter(x => x.unread).length)).catch(() => {})
+  useEffect(() => { if (session?.role === 'seller') refreshUnread() }, [session, loc.pathname])  // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen">
@@ -32,8 +40,13 @@ export default function App() {
               {buyer ? <>
                 <Link to="/" className="text-slate-600 hover:text-indigo-700">My RFQs</Link>
                 <Link to="/quotes" className="text-slate-600 hover:text-indigo-700">Quote Evaluation</Link>
+                <Link to="/profile" className="text-slate-600 hover:text-indigo-700">Profile</Link>
                 <Link to="/new" className="btn-primary"><Plus size={14} />New RFQ</Link>
-              </> : <Link to="/" className="text-slate-600 hover:text-indigo-700">Quote Requests</Link>}
+              </> : <>
+                <Link to="/" className="text-slate-600 hover:text-indigo-700">Quote Requests</Link>
+                <Link to="/pos" className="flex items-center gap-1 text-slate-600 hover:text-indigo-700">Purchase Orders
+                  {unread > 0 && <span className="rounded-full bg-red-600 px-1.5 text-[11px] font-semibold text-white" title={`${unread} new purchase order${unread > 1 ? 's' : ''}`}>{unread}</span>}</Link>
+              </>}
               <span className="text-xs text-slate-500">{buyer ? 'Buyer' : 'Supplier'} · <b className="text-slate-700">{session.name}</b></span>
               <button className="text-slate-400 hover:text-red-600" title="Sign out" onClick={logout}><LogOut size={16} /></button>
             </div>
@@ -53,12 +66,16 @@ export default function App() {
             <Route path="/rfq/:id/sellers/:sid" element={<SellerDetail />} />
             <Route path="/quotes" element={<QuoteEvaluation />} />
             <Route path="/quotes/:id" element={<QuoteEvalRfq />} />
+            <Route path="/quotes/:id/po" element={<PurchaseOrder />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         ) : (
           <Routes>
             <Route path="/" element={<QuoteRequests />} />
             <Route path="/requests/:qid" element={<QuoteRequest />} />
+            <Route path="/pos" element={<PurchaseOrders />} />
+            <Route path="/pos/:pid" element={<PurchaseOrderView onRead={refreshUnread} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         )}

@@ -1,4 +1,4 @@
-// Renders the RFQ blocks (same structure the backend writes into the .docx).
+// Renders RFQ / purchase-order blocks (same structure the backend writes into the .docx).
 // Unfilled required values come back as "[Label?]" and are highlighted.
 const mark = (text) => {
   const parts = String(text).split(/(\[[^\]]+\?\])/g)
@@ -16,6 +16,8 @@ export default function Preview({ blocks }) {
         switch (b.t) {
           case 'title': return <h1 key={i} className="text-2xl font-semibold text-[#17365D]">{b.text}</h1>
           case 'sub': return <div key={i} className="text-base text-slate-600">{mark(b.text)}</div>
+          case 'meta': return <div key={i} className="text-xs font-semibold tracking-wide text-teal-700">{b.text}</div>
+          case 'bold': return <p key={i} className="font-semibold">{mark(b.text)}</p>
           case 'h1': return <h2 key={i} className="mt-5 border-b border-slate-200 pb-1 text-base font-semibold text-[#17365D]">{b.text}</h2>
           case 'h2': return <h3 key={i} className="mt-3 text-sm font-semibold text-[#17365D]">{mark(b.text)}</h3>
           case 'bullet': return <div key={i} className="flex gap-2 pl-2"><span>•</span><span>{mark(b.text)}</span></div>

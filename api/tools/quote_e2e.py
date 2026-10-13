@@ -19,6 +19,7 @@ from pathlib import Path
 if "--keep" not in sys.argv:
     tmp = Path(tempfile.mkdtemp(prefix="cx-quote-e2e-"))
     os.environ["RFQ_DIR"], os.environ["QUOTE_DIR"] = str(tmp / "rfqs"), str(tmp / "quotes")
+    os.environ["PO_DIR"], os.environ["BUYER_DIR"] = str(tmp / "pos"), str(tmp / "buyers")
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from fastapi.testclient import TestClient  # noqa: E402
@@ -223,11 +224,22 @@ g = ok(c.get(f"/api/rfqs/{rid}/evaluation", headers=BUYER))
 check("C10 reopening shows the saved analysis unchanged", g == e2)
 
 top = e2["results"][0]["request_id"]
-r = ok(c.post(f"/api/rfqs/{rid}/quotes/{top}/accept", headers=BUYER))
+# Accept = select -> PO (standard template) -> Generate PO (the PO module; tools/po_e2e.py tests it fully)
+ok(c.put("/api/buyer/profile", json={"registered_office": "Plot 4, Pune", "billing_address": "Plot 4, Pune",
+                                     "shipping_addresses": ["Plant 1, Chakan"], "signatory_name": "A. Rao",
+                                     "terms": [t for t in ok(c.get("/api/buyer/profile", headers=BUYER))["terms"]
+                                               if t["id"] != "t13"]}, headers=BUYER))
+ok(c.post(f"/api/rfqs/{rid}/quotes/{top}/select", headers=BUYER))
+ok(c.post(f"/api/rfqs/{rid}/po/start", json={"mode": "template"}, headers=BUYER))
+ok(c.put(f"/api/rfqs/{rid}/po", json={"fields": {"delivery_date": (date.today() + timedelta(days=60)).isoformat()}},
+         headers=BUYER))
+x = c.post(f"/api/rfqs/{rid}/quotes/{top}/accept", headers=BUYER)
+check("C12 the old one-click accept is gone (PO first)", x.status_code in (404, 405), x.status_code)
+r = ok(c.post(f"/api/rfqs/{rid}/po/issue", headers=BUYER))
 oc = {x["id"]: x["outcome"] for x in r["requests"] if x["status"] == "quoted"}
 check("C12 accepted / not selected recorded", oc[top] == "accepted"
       and all(v == "not_selected" for k, v in oc.items() if k != top))
-x = c.post(f"/api/rfqs/{rid}/quotes/{top}/accept", headers=BUYER)
+x = c.post(f"/api/rfqs/{rid}/quotes/{next(k for k in oc if k != top)}/select", headers=BUYER)
 check("C12 only one quote can be accepted", x.status_code == 409, x.status_code)
 loser = next(k for k in oc if k != top)
 loser_sid = next(s for s, q in req_of.items() if q == loser)

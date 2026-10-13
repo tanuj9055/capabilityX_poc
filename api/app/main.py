@@ -22,7 +22,7 @@ from fastapi import Body, Depends, FastAPI, File, Header, HTTPException, UploadF
 from fastapi.responses import FileResponse  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 
-from . import ingest, pipeline, quote_ai, quotes, rfq_builder, store  # noqa: E402
+from . import ingest, pipeline, po, po_ai, po_doc, quote_ai, quotes, rfq_builder, store  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 app = FastAPI(title="CapabilityX POC")
@@ -293,9 +293,11 @@ def seller_detail(rid: str, sid: str, h: dict = Depends(_session)):
 
 
 # ── Quote requests: buyer side ───────────────────────────────────────────────
-def _buyer_request_view(q: dict) -> dict:
+def _buyer_request_view(q: dict, selected: str | None = None) -> dict:
     out = {k: q.get(k) for k in ("id", "seller_id", "seller_name", "deadline", "sent_at", "viewed_at",
                                  "submitted_at", "decline_reason", "revision", "outcome")}
+    if not out["outcome"] and q["id"] == selected:
+        out["outcome"] = "selected"  # buyer-side only until the PO is issued (PO BRD flow step 2)
     out["status"] = quotes.effective_status(q)
     if q["status"] == "quoted":
         out["quotation"] = q["quotation"]
@@ -348,8 +350,8 @@ def request_quotes(rid: str, body: dict = Body(...), h: dict = Depends(_session)
 def rfq_quotes(rid: str, h: dict = Depends(_session)):
     r = _rfq(rid, h)
     return {"rfq": {k: r.get(k) for k in ("id", "ref", "title", "summary", "status")},
-            "requests": [_buyer_request_view(q) for q in store.list_requests(rfq_id=r["id"])],
-            "evaluation": r.get("evaluation"), "default_criteria": quotes.DEFAULT_CRITERIA,
+            "requests": [_buyer_request_view(q, _selected(r)) for q in store.list_requests(rfq_id=r["id"])],
+            "po": _po_brief(r), "evaluation": r.get("evaluation"), "default_criteria": quotes.DEFAULT_CRITERIA,
             "fields": quotes.FIELDS}
 
 
@@ -366,7 +368,8 @@ def quote_eval_list(h: dict = Depends(_session)):
             counts[quotes.effective_status(q)] += 1
         out.append({"id": r["id"], "ref": r["ref"], "title": r["title"], "requests": len(reqs), "counts": counts,
                     "deadline": max(q["deadline"] for q in reqs), "evaluated": bool(r.get("evaluation")),
-                    "accepted": next((q["seller_name"] for q in reqs if q.get("outcome") == "accepted"), None)})
+                    "accepted": next((q["seller_name"] for q in reqs if q.get("outcome") == "accepted"), None),
+                    "po": _po_brief(r)})
     return out
 
 
@@ -406,22 +409,261 @@ def get_evaluation(rid: str, h: dict = Depends(_session)):
     return _rfq(rid, h).get("evaluation")
 
 
-@app.post("/api/rfqs/{rid}/quotes/{qid}/accept")
-def accept_quote(rid: str, qid: str, h: dict = Depends(_session)):
+# ── Buyer profile + purchase orders (PO BRD) ─────────────────────────────────
+def _profile(u: dict) -> dict:
+    return store.load_buyer(u["id"]) or po.default_profile(u["id"], u["name"])
+
+
+@app.get("/api/buyer/profile")
+def get_profile(h: dict = Depends(_session)):
+    return _profile(_buyer(h))
+
+
+@app.put("/api/buyer/profile")
+def put_profile(body: dict = Body(...), h: dict = Depends(_session)):
+    u = _buyer(h)
+    return store.save_buyer(po.clean_profile(body, _profile(u)))
+
+
+@app.delete("/api/buyer/po-templates/{tid}")
+def delete_po_template(tid: str, h: dict = Depends(_session)):
+    u = _buyer(h)
+    prof = _profile(u)
+    prof["po_templates"] = [t for t in prof.get("po_templates") or [] if t["id"] != tid]
+    return store.save_buyer(prof)
+
+
+def _draft_po(r: dict) -> dict | None:
+    return next((p for p in store.list_pos(rfq_id=r["id"]) if p["status"] == "draft"), None)
+
+
+def _issued_po(r: dict) -> dict | None:
+    return next((p for p in store.list_pos(rfq_id=r["id"]) if p["status"] == "issued"), None)
+
+
+def _selected(r: dict) -> str | None:
+    d = _draft_po(r)
+    return d["request_id"] if d else None
+
+
+def _po_brief(r: dict) -> dict | None:
+    p = _issued_po(r) or _draft_po(r)
+    return {k: p.get(k) for k in ("id", "status", "request_id", "seller_name")} | {
+        "po_number": p["fields"].get("po_number"), "total": (p.get("totals") or {}).get("total")} if p else None
+
+
+def _po_view(p: dict, req: dict) -> dict:
+    out = dict(p)
+    out["checks"] = po.checks(p, req) if p["status"] == "draft" else []
+    out["quotation"] = {**req["quotation"], "seller_name": req["seller_name"], "submitted_at": req.get("submitted_at"),
+                        "valid_until": (po.valid_until(req) or "") and po.valid_until(req).isoformat()}
+    return out
+
+
+def _rfq_po(rid: str, h: dict, status: str | None = "draft") -> tuple[dict, dict, dict]:
     r = _rfq(rid, h)
-    reqs = store.list_requests(rfq_id=r["id"])
-    target = next((q for q in reqs if q["id"] == qid), None)
-    if not target or target["status"] != "quoted":
+    p = _draft_po(r) if status == "draft" else (_issued_po(r) or _draft_po(r))
+    if not p:
+        raise HTTPException(404, "No purchase order for this RFQ — accept a quote first")
+    return r, p, store.load_request(p["request_id"])
+
+
+@app.post("/api/rfqs/{rid}/quotes/{qid}/select")
+def select_quote(rid: str, qid: str, h: dict = Depends(_session)):
+    """Accept (step 1): opens a PO draft. Nothing is accepted and the supplier sees nothing yet."""
+    r = _rfq(rid, h)
+    req = store.load_request(qid)
+    if not req or req["rfq_id"] != r["id"] or req["status"] != "quoted":
         raise HTTPException(404, "Quote not found")
-    if any(q.get("outcome") == "accepted" for q in reqs):
-        raise HTTPException(409, "A quote has already been accepted for this RFQ")
-    for q in reqs:
-        if q["status"] == "quoted":
-            q["outcome"] = "accepted" if q["id"] == qid else "not_selected"
-            store.save_request(q)
-    r["accepted_request"] = qid
-    store.save_rfq(r)
+    if _issued_po(r) or any(q.get("outcome") == "accepted" for q in store.list_requests(rfq_id=r["id"])):
+        raise HTTPException(409, "A purchase order has already been issued for this RFQ")
+    d = _draft_po(r)
+    if d and d["request_id"] != qid:
+        raise HTTPException(409, f"{d['seller_name']} is already selected — cancel that selection first")
+    if not d:
+        d = {"id": store.new_id(), "rfq_id": r["id"], "request_id": qid, "buyer_id": r["buyer_id"],
+             "seller_id": req["seller_id"], "seller_name": req["seller_name"], "status": "draft", "mode": None,
+             "created_at": store.now(), "issued_at": None, "read_at": None, "file": None, "questions": [],
+             "rfq": {"id": r["id"], "ref": r["ref"], "title": r["title"], "understanding": r.get("understanding")},
+             "fields": {}, "lines": [], "totals": {"subtotal": 0, "tax": 0, "freight": 0, "total": 0}}
+        store.save_po(d)
+    return _po_view(d, req)
+
+
+@app.get("/api/rfqs/{rid}/po")
+def get_po(rid: str, h: dict = Depends(_session)):
+    r, p, req = _rfq_po(rid, h, status=None)
+    out = _po_view(p, req)
+    out["templates"] = [{"id": t["id"], "name": t["name"]} for t in _profile(_buyer(h)).get("po_templates") or []]
+    return out
+
+
+@app.post("/api/rfqs/{rid}/po/start")
+def start_po(rid: str, body: dict = Body(...), h: dict = Depends(_session)):
+    """Template (standard or saved) or AI-assisted draft. Both are pre-filled from the quotation."""
+    r, p, req = _rfq_po(rid, h)
+    u, mode = _buyer(h), body.get("mode")
+    if mode not in ("template", "ai"):
+        raise HTTPException(400, "Choose template or ai (upload has its own route)")
+    prof = _profile(u)
+    seq = len([x for x in store.list_pos(buyer_id=u["id"]) if x["status"] == "issued"]) + 1
+    base = po.from_quote(req, r, store.seller(req["seller_id"]), prof, seq)
+    p.update({"mode": mode, "file": None, "template_id": None, "stated_total": None, **base})
+    if mode == "template" and body.get("template_id"):
+        tpl = next((t for t in prof.get("po_templates") or [] if t["id"] == body["template_id"]), None)
+        if not tpl:
+            raise HTTPException(404, "Saved PO template not found")
+        po.apply_template(p, tpl, prof)
+        p["template_id"] = tpl["id"]
+    p = po.clean(p, {}, req)
+    p["questions"] = []
+    if mode == "ai":
+        p = po_ai.draft(p, req, r, store.seller(req["seller_id"]), prof)
+        p["questions"] = po.questions(p, prof)
+    return _po_view(store.save_po(p), req)
+
+
+@app.post("/api/rfqs/{rid}/po/ai-answers")
+def po_ai_answers(rid: str, body: dict = Body(...), h: dict = Depends(_session)):
+    r, p, req = _rfq_po(rid, h)
+    p = po_ai.apply_answers(p, body.get("answers") or {}, req)
+    p["questions"] = []
+    return _po_view(store.save_po(p), req)
+
+
+@app.post("/api/rfqs/{rid}/po/upload")
+async def upload_po(rid: str, file: UploadFile = File(...), h: dict = Depends(_session)):
+    """The buyer's own PO file: extracted, compared with the selected quotation, sent as-is on issue."""
+    r, p, req = _rfq_po(rid, h)
+    data = await file.read()
+    if len(data) > 20 * 1024 * 1024:
+        raise HTTPException(413, "File too large (20 MB max)")
+    name = file.filename or "purchase_order"
+    ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+    if ext not in ("pdf", "docx", "png", "jpg", "jpeg"):
+        raise HTTPException(400, "Upload the PO as PDF, DOCX or an image")
+    try:
+        blocks = ingest.to_blocks(data, name)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    if not blocks:
+        raise HTTPException(400, "No text found in the PO file")
+    x = po_ai.extract(blocks)
+    store.po_path(p["id"], f"upload.{ext}").write_bytes(data)
+    rfq_ref = {"id": r["id"], "ref": r["ref"], "title": r["title"], "understanding": r.get("understanding")}
+    p.update({"mode": "upload", "template_id": None, "questions": [], "rfq": rfq_ref,
+              "file": {"name": name, "ext": ext}, "fields": {"currency": "INR", "quote_ref": po.quote_ref(req)},
+              "key_controls": [], "schedule": [], "clarifications": [], "terms": x["terms"]})
+    p = po.clean(p, {"fields": x["fields"], "lines": x["lines"], "gst_pct": x["gst_pct"], "freight": x["freight"],
+                     "stated_total": x["stated_total"]}, req)
+    return _po_view(store.save_po(p), req)
+
+
+@app.put("/api/rfqs/{rid}/po")
+def save_po(rid: str, body: dict = Body(...), h: dict = Depends(_session)):
+    """Save the draft (the buyer can come back later). Locked lines are re-copied from the quotation."""
+    r, p, req = _rfq_po(rid, h)
+    if not p.get("mode"):
+        raise HTTPException(400, "Choose how to create the PO first")
+    return _po_view(store.save_po(po.clean(p, body, req)), req)
+
+
+@app.post("/api/rfqs/{rid}/po/preview")
+def preview_po(rid: str, body: dict = Body(...), h: dict = Depends(_session)):
+    r, p, req = _rfq_po(rid, h, status=None)
+    if p["status"] == "draft" and body:
+        p = po.clean(dict(p), body, req)  # the edits on screen, not saved
+    return {"blocks": po_doc.blocks(p, draft=p["status"] == "draft")}
+
+
+@app.post("/api/rfqs/{rid}/po/save-template")
+def save_po_template(rid: str, body: dict = Body(...), h: dict = Depends(_session)):
+    r, p, req = _rfq_po(rid, h)
+    name = str(body.get("name") or "").strip()
+    if not name:
+        raise HTTPException(400, "Name the template")
+    u = _buyer(h)
+    prof = _profile(u)
+    prof.setdefault("po_templates", []).append(po.template_from_po(p, name, store.new_id()))
+    store.save_buyer(prof)
+    return {"templates": [{"id": t["id"], "name": t["name"]} for t in prof["po_templates"]]}
+
+
+@app.delete("/api/rfqs/{rid}/po")
+def cancel_selection(rid: str, h: dict = Depends(_session)):
+    """Cancel the selection before issue: the draft is discarded, the quotation is Submitted again."""
+    r, p, req = _rfq_po(rid, h)
+    store.delete_po(p["id"])
     return {"requests": [_buyer_request_view(q) for q in store.list_requests(rfq_id=r["id"])]}
+
+
+def deliver_po(p: dict) -> dict:
+    """Deliver an issued PO to the supplier: it lands in the supplier's Purchase Orders tab, unread (notification)."""
+    p = {**p, "status": "issued", "issued_at": store.now(), "delivered_at": store.now(), "read_at": None}
+    return store.save_po(p)
+
+
+@app.post("/api/rfqs/{rid}/po/issue")
+def issue_po(rid: str, h: dict = Depends(_session)):
+    """Generate PO: issue + deliver to the supplier + quotation Accepted + others Not selected, as one action.
+    If delivery fails nothing is accepted (PO BRD criterion 5)."""
+    r, p, req = _rfq_po(rid, h)
+    c = po.checks(p, req)
+    if po.has_errors(c):
+        raise HTTPException(400, "Fix before issuing: " + "; ".join(x["message"] for x in c if x["level"] == "error"))
+    draft = dict(p)
+    try:
+        po_doc.render_docx(p, store.po_path(p["id"], "docx"))
+        issued = deliver_po(p)
+    except Exception as e:  # nothing was accepted; the draft stays as it was
+        logging.getLogger("capabilityx.po").error("PO delivery failed: %s", e)
+        store.save_po(draft)
+        raise HTTPException(502, "The PO could not be delivered to the supplier — nothing was accepted. Try again.")
+    reqs = store.list_requests(rfq_id=r["id"])
+    try:
+        for q in reqs:
+            if q["status"] == "quoted":
+                q["outcome"] = "accepted" if q["id"] == req["id"] else "not_selected"
+                if q["id"] == req["id"]:
+                    q["po_id"] = p["id"]
+                store.save_request(q)
+        r["accepted_request"] = req["id"]
+        store.save_rfq(r)
+    except Exception as e:  # roll the delivery back so the supplier never holds a PO for an unaccepted quote
+        logging.getLogger("capabilityx.po").error("PO acceptance failed, rolling back: %s", e)
+        for q in reqs:
+            q["outcome"] = None
+            q.pop("po_id", None)
+            store.save_request(q)
+        store.save_po(draft)
+        raise HTTPException(500, "The PO could not be issued — nothing was accepted. Try again.")
+    return {"po": _po_view(issued, store.load_request(req["id"])),
+            "requests": [_buyer_request_view(q) for q in store.list_requests(rfq_id=r["id"])]}
+
+
+def _po_file(p: dict, which: str) -> FileResponse:
+    if which == "original":
+        if not p.get("file"):
+            raise HTTPException(404, "This PO was not uploaded as a file")
+        f = store.po_path(p["id"], f"upload.{p['file']['ext']}")
+        return FileResponse(f, filename=p["file"]["name"])
+    f = store.po_path(p["id"], "docx")
+    if p["status"] != "issued" or not f.exists():
+        f = po_doc.render_docx(p, store.po_path(p["id"], "draft.docx"))
+    return FileResponse(f, filename=f"{p['fields'].get('po_number') or 'PO'}.docx".replace(" ", "_"),
+                        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+
+
+@app.get("/api/rfqs/{rid}/po.docx")
+def buyer_po_docx(rid: str, role: str | None = None, uid: str | None = None, h: dict = Depends(_session)):
+    r, p, req = _rfq_po(rid, {**h, "role": h["role"] or role, "id": h["id"] or uid}, status=None)
+    return _po_file(p, "docx")
+
+
+@app.get("/api/rfqs/{rid}/po-file")
+def buyer_po_original(rid: str, role: str | None = None, uid: str | None = None, h: dict = Depends(_session)):
+    r, p, req = _rfq_po(rid, {**h, "role": h["role"] or role, "id": h["id"] or uid}, status=None)
+    return _po_file(p, "original")
 
 
 # ── Quote requests: supplier side ────────────────────────────────────────────
@@ -439,6 +681,7 @@ def _seller_view(q: dict, full: bool = True) -> dict:
     out["status"] = quotes.effective_status(q)
     out["rfq"] = q["rfq"] if full else {k: q["rfq"][k] for k in ("ref", "title")}
     out["open"] = out["status"] in ("sent", "viewed", "quoted") and not q.get("outcome")
+    out["po_id"] = q.get("po_id") if q.get("outcome") == "accepted" else None
     if full:
         out.update({k: q.get(k) for k in ("fit", "quotation", "draft", "questions", "checks")})
     return out
@@ -570,6 +813,48 @@ def seller_submit(qid: str, h: dict = Depends(_session)):
     q["revision"] = (q.get("revision") or 0) + 1
     q["submitted_at"] = store.now()
     return _seller_view(store.save_request(q))
+
+
+# ── Purchase orders: supplier side (only issued POs addressed to this supplier) ─
+def _seller_po(pid: str, h: dict) -> dict:
+    u = _user("seller", h)
+    p = store.load_po(pid)
+    if not p or p["seller_id"] != u["id"] or p["status"] != "issued":
+        raise HTTPException(404, "Purchase order not found")
+    return p
+
+
+def _seller_po_brief(p: dict) -> dict:
+    return {"id": p["id"], "po_number": p["fields"].get("po_number"), "buyer_name": p["fields"].get("buyer_name"),
+            "rfq_ref": p["rfq"]["ref"], "title": p["rfq"]["title"], "issued_at": p["issued_at"],
+            "total": p["totals"]["total"], "unread": not p.get("read_at"), "mode": p.get("mode"),
+            "delivery_date": p["fields"].get("delivery_date")}
+
+
+@app.get("/api/seller/pos")
+def seller_pos(h: dict = Depends(_session)):
+    u = _user("seller", h)
+    return [_seller_po_brief(p) for p in store.list_pos(seller_id=u["id"]) if p["status"] == "issued"]
+
+
+@app.get("/api/seller/pos/{pid}")
+def seller_po(pid: str, h: dict = Depends(_session)):
+    p = _seller_po(pid, h)
+    if not p.get("read_at"):  # opening the PO clears the notification
+        p["read_at"] = store.now()
+        store.save_po(p)
+    return {**_seller_po_brief(p), "fields": p["fields"], "lines": p["lines"], "totals": p["totals"],
+            "file": p.get("file"), "blocks": po_doc.blocks(p)}
+
+
+@app.get("/api/seller/pos/{pid}/po.docx")
+def seller_po_docx(pid: str, role: str | None = None, uid: str | None = None, h: dict = Depends(_session)):
+    return _po_file(_seller_po(pid, {**h, "role": h["role"] or role, "id": h["id"] or uid}), "docx")
+
+
+@app.get("/api/seller/pos/{pid}/file")
+def seller_po_original(pid: str, role: str | None = None, uid: str | None = None, h: dict = Depends(_session)):
+    return _po_file(_seller_po(pid, {**h, "role": h["role"] or role, "id": h["id"] or uid}), "original")
 
 
 # ── SPA ──────────────────────────────────────────────────────────────────────

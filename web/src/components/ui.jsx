@@ -22,11 +22,12 @@ const STATUS = {
   sent: 'bg-sky-100 text-sky-800', viewed: 'bg-violet-100 text-violet-800', quoted: 'bg-emerald-100 text-emerald-800',
   declined: 'bg-slate-200 text-slate-700', expired: 'bg-red-100 text-red-700',
   accepted: 'bg-emerald-600 text-white', not_selected: 'bg-slate-100 text-slate-500',
+  selected: 'bg-amber-100 text-amber-800 border border-amber-300', issued: 'bg-emerald-600 text-white',
   error: 'bg-red-100 text-red-700', warn: 'bg-amber-100 text-amber-800',
 }
 const LABEL = {
   full: 'Met', partial: 'Partial', not: 'Not met', na: 'Data not available', unmapped: 'Not covered', skipped: 'Not assessed', results: 'matched',
-  sent: 'Sent', viewed: 'Viewed', quoted: 'Quoted', declined: 'Declined', expired: 'Expired', accepted: 'Accepted', not_selected: 'Not selected',
+  sent: 'Sent', viewed: 'Viewed', quoted: 'Quoted', declined: 'Declined', expired: 'Expired', accepted: 'Accepted', not_selected: 'Not selected', selected: 'Selected (PO pending)', issued: 'PO issued',
 }
 
 export const Badge = ({ k, children }) => (

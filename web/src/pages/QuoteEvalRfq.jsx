@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Award, Plus, Sparkles, Trash2, X } from 'lucide-react'
 import { api, inr } from '../api'
 import { Badge, Busy, ErrorBox, ScoreBar, Spinner } from '../components/ui.jsx'
@@ -15,6 +15,7 @@ export default function QuoteEvalRfq() {
   const [err, setErr] = useState(null)
   const [busy, setBusy] = useState(null)
   const [open, setOpen] = useState(null)  // request id shown in the drawer
+  const nav = useNavigate()
 
   const load = () => api.get(`/rfqs/${id}/quotes`).then(d => {
     setData(d)
@@ -31,6 +32,7 @@ export default function QuoteEvalRfq() {
   const { rfq, requests, evaluation, fields } = data
   const quoted = requests.filter(r => r.status === 'quoted')
   const accepted = requests.find(r => r.outcome === 'accepted')
+  const selected = requests.find(r => r.outcome === 'selected')
   const byId = Object.fromEntries(requests.map(r => [r.id, r]))
   const weightSum = (criteria || []).reduce((s, c) => s + (Number(c.weight) || 0), 0)
 
@@ -39,10 +41,10 @@ export default function QuoteEvalRfq() {
     setData(d => ({ ...d, evaluation: ev }))
     setCriteria(ev.criteria.map(x => ({ ...x })))
   })
-  const accept = (qid) => run('Accepting…', async () => {
-    const r = await api.post(`/rfqs/${id}/quotes/${qid}/accept`)
-    setData(d => ({ ...d, requests: r.requests }))
-    setOpen(null)
+  // Accept does not accept yet: it opens a PO draft (PO BRD); the quote is Accepted when the PO is generated
+  const accept = (qid) => run('Opening the PO draft…', async () => {
+    await api.post(`/rfqs/${id}/quotes/${qid}/select`)
+    nav(`/quotes/${id}/po`)
   })
 
   return (
@@ -53,7 +55,10 @@ export default function QuoteEvalRfq() {
         <div className="text-xs text-slate-500">{rfq.ref}</div>
         <h1 className="text-xl font-semibold">{rfq.title}</h1>
         {rfq.summary && <p className="mt-1 text-sm text-slate-600">{rfq.summary}</p>}
-        {accepted && <div className="mt-3 rounded-md border border-emerald-300 bg-emerald-50 p-2 text-sm text-emerald-800"><Award size={14} className="mr-1 inline" />Accepted quote: <b>{accepted.seller_name}</b></div>}
+        {accepted && <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-emerald-300 bg-emerald-50 p-2 text-sm text-emerald-800"><Award size={14} />Accepted quote: <b>{accepted.seller_name}</b>
+          {data.po && <Link to={`/quotes/${id}/po`} className="ml-auto text-indigo-700 hover:underline">PO {data.po.po_number} issued — view</Link>}</div>}
+        {selected && <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-amber-300 bg-amber-50 p-2 text-sm text-amber-900">Selected: <b>{selected.seller_name}</b> — purchase order not generated yet. The supplier sees nothing until you generate it.
+          <Link to={`/quotes/${id}/po`} className="btn-primary ml-auto py-1 text-xs">Continue the PO</Link></div>}
       </div>
       <ErrorBox error={err} />
 
@@ -198,7 +203,7 @@ export default function QuoteEvalRfq() {
         </section>
       )}
 
-      {open && byId[open] && <Drawer r={byId[open]} canAccept={!accepted} onAccept={() => accept(open)} onClose={() => setOpen(null)} />}
+      {open && byId[open] && <Drawer r={byId[open]} canAccept={!accepted && !selected} onAccept={() => accept(open)} onClose={() => setOpen(null)} />}
     </div>
   )
 }
@@ -256,7 +261,8 @@ function Drawer({ r, canAccept, onAccept, onClose }) {
         {q.supporting?.certifications?.length > 0 && <p className="mt-1 text-sm"><span className="text-slate-500">Certifications: </span>{q.supporting.certifications.join(', ')}</p>}
         {q.supporting?.past_orders?.length > 0 && <ul className="mt-1 list-disc pl-4 text-sm">{q.supporting.past_orders.map((x, i) => <li key={i}>{x}</li>)}</ul>}
         {(r.checks || []).length > 0 && <div className="mt-3 space-y-1">{r.checks.map((c, i) => <div key={i} className="rounded bg-amber-50 px-2 py-1 text-xs text-amber-800">{c.message}</div>)}</div>}
-        {canAccept && <button className="btn-primary mt-5 w-full justify-center" onClick={onAccept}><Award size={14} />Accept this quote</button>}
+        {canAccept && <button className="btn-primary mt-5 w-full justify-center" onClick={onAccept}><Award size={14} />Accept &amp; create purchase order</button>}
+        {canAccept && <p className="mt-2 text-center text-xs text-slate-500">Opens a PO draft. The quote is accepted and the supplier notified only when you generate the PO.</p>}
       </div>
     </div>
   )

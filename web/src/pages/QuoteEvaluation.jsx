@@ -33,7 +33,9 @@ export default function QuoteEvaluation() {
               <div className="flex flex-wrap gap-1">
                 {ORDER.filter(k => r.counts[k]).map(k => <Badge key={k} k={k}>{r.counts[k]} {k}</Badge>)}
               </div>
-              {r.accepted ? <Badge k="accepted">Accepted: {r.accepted}</Badge> : r.evaluated && <span className="text-xs text-indigo-600">Analysed</span>}
+              {r.accepted ? <Badge k="accepted">Accepted: {r.accepted}{r.po?.status === 'issued' && ` · PO ${r.po.po_number}`}</Badge>
+                : r.po?.status === 'draft' ? <Badge k="selected">PO pending: {r.po.seller_name}</Badge>
+                : r.evaluated && <span className="text-xs text-indigo-600">Analysed</span>}
               <ChevronRight size={16} className="text-slate-400" />
             </Link>
           ))}

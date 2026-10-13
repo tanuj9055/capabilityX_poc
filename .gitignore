@@ -8,3 +8,7 @@ api/app/data/quotes/*
 !api/app/data/quotes/.gitkeep
 **/*credentials*.json
 .venv/
+api/app/data/pos/*
+!api/app/data/pos/.gitkeep
+api/app/data/buyers/*
+!api/app/data/buyers/.gitkeep

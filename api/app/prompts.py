@@ -202,3 +202,52 @@ Return JSON:
   "risks": [str], "points_to_confirm": [str]}}
 "risks": up to 3 commercial or delivery risks in this quote. "points_to_confirm": up to 3 things the buyer
 should confirm with this supplier before accepting."""
+
+# ── purchase orders (buyer side) ─────────────────────────────────────────────
+DRAFT_PO = """You help an Indian manufacturing buyer turn the quotation they selected into a purchase order (PO).
+Items, quantities, prices, taxes and totals are already copied from the quotation — do not restate or change them.
+Use ONLY the RFQ, the selected quotation and the two profiles below. Never invent facts, dates or legal clauses.
+
+RFQ {ref}: {title}
+Tender understanding: {understanding}
+Selected quotation (from {supplier}): {quote}
+Buyer profile: {buyer}
+Supplier: {supplier} ({city}) — {profile}
+
+The buyer's saved terms and conditions library (id: title — text):
+{terms}
+
+Return JSON:
+{{"intro": "one sentence: the buyer places this order on the supplier for <scope> against {ref} and the selected quotation (write the reference once, exactly as given)",
+  "po_type": "Standard purchase order" | "Phased purchase order" | "Blanket purchase order",
+  "key_controls": [str],
+  "schedule": [["Stage", "Quantity", "Required timing", "Release and acceptance gate"]],
+  "clarifications": [["Quotation topic", "Buyer position and PO condition"]],
+  "term_ids": [str]}}
+Rules:
+- "key_controls": 2-4 short controls that follow from the RFQ and quotation (e.g. no change to items or prices
+  without amendment; certificates the RFQ requires with each delivery; no substitution of approved material).
+- "schedule": delivery stages from the RFQ delivery schedule and the quoted lead time (e.g. monthly lots ->
+  one row per lot). "Required timing" relative to the PO ("Within 45 days of PO", "Month 2") only when the
+  quotation or RFQ states it, otherwise "". Quantities must add up to the quoted quantity.
+- "clarifications": one row per supplier assumption, clarification or deviation in the quotation, with a neutral
+  buyer position ("Accepted as stated", "Accepted subject to ..."). [] if the quotation has none.
+- "term_ids": choose the clauses from the library that fit this order (ids only). You may not write new clauses."""
+
+EXTRACT_PO = """Read this purchase order (numbered text blocks) and convert it into a standard structure.
+Copy values exactly as written; use null when the PO does not state something. Lump-sum lines (quantity
+"1 lot", only a value): qty 1, unit "lot", unit_price = the value.
+
+PO:
+{blocks}
+
+Return JSON:
+{{"po_number": str|null, "po_date": "YYYY-MM-DD"|null, "buyer_name": str|null, "buyer_address": str|null,
+  "buyer_gstin": str|null, "bill_to": str|null, "ship_to": str|null, "supplier_name": str|null,
+  "supplier_address": str|null, "supplier_gstin": str|null, "delivery_basis": str|null, "delivery_date": "YYYY-MM-DD"|null,
+  "payment_terms": str|null, "inspection": str|null, "special_terms": str|null,
+  "buyer_signatory": str|null, "buyer_designation": str|null,
+  "lines": [{{"desc": str, "qty": number|null, "unit": str, "unit_price": number|null}}],
+  "gst_pct": number|null, "freight": number|null, "stated_total": number|null,
+  "terms": [{{"title": str, "text": str}}]}}
+"stated_total" = the total PO value the document states (incl. GST and freight), or null."""

@@ -46,5 +46,9 @@ export const api = {
 const auth = () => { const s = getSession() || {}; return `role=${s.role}&uid=${encodeURIComponent(s.id || '')}` }
 export const docxUrl = (id) => `/api/rfqs/${id}/docx?${auth()}`
 export const sellerDocxUrl = (qid) => `/api/seller/requests/${qid}/rfq.docx?${auth()}`
+export const poDocxUrl = (rid) => `/api/rfqs/${rid}/po.docx?${auth()}`
+export const poFileUrl = (rid) => `/api/rfqs/${rid}/po-file?${auth()}`
+export const sellerPoDocxUrl = (pid) => `/api/seller/pos/${pid}/po.docx?${auth()}`
+export const sellerPoFileUrl = (pid) => `/api/seller/pos/${pid}/file?${auth()}`
 
 export const inr = (n) => n == null ? '—' : '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 })

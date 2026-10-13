@@ -106,3 +106,65 @@ def list_requests(rfq_id: str | None = None, seller_id: str | None = None) -> li
         if (rfq_id is None or q.get("rfq_id") == rfq_id) and (seller_id is None or q.get("seller_id") == seller_id):
             out.append(q)
     return sorted(out, key=lambda q: q.get("sent_at", ""), reverse=True)
+
+
+# ── purchase orders (one per RFQ, from the selected quotation) + buyer profiles ─
+PO_DIR = Path(os.getenv("PO_DIR", DATA / "pos"))
+PO_DIR.mkdir(parents=True, exist_ok=True)
+BUYER_DIR = Path(os.getenv("BUYER_DIR", DATA / "buyers"))
+BUYER_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def po_path(pid: str, ext: str = "json") -> Path:
+    return PO_DIR / f"{pid}.{ext}"
+
+
+def save_po(po: dict) -> dict:
+    po["updated_at"] = now()
+    with _lock:
+        tmp = po_path(po["id"], "json.tmp")
+        tmp.write_text(json.dumps(po, indent=1, ensure_ascii=False), "utf-8")
+        tmp.replace(po_path(po["id"]))
+    return po
+
+
+def load_po(pid: str) -> dict | None:
+    if not pid.isalnum():
+        return None
+    p = po_path(pid)
+    return json.loads(p.read_text("utf-8")) if p.exists() else None
+
+
+def list_pos(rfq_id: str | None = None, seller_id: str | None = None, buyer_id: str | None = None) -> list[dict]:
+    out = []
+    for p in PO_DIR.glob("*.json"):
+        po = json.loads(p.read_text("utf-8"))
+        if ((rfq_id is None or po.get("rfq_id") == rfq_id) and (seller_id is None or po.get("seller_id") == seller_id)
+                and (buyer_id is None or po.get("buyer_id") == buyer_id)):
+            out.append(po)
+    return sorted(out, key=lambda po: po.get("created_at", ""), reverse=True)
+
+
+def delete_po(pid: str) -> None:
+    """Discard a draft PO and every file that belongs to it (rendered .docx, uploaded file)."""
+    with _lock:
+        for f in PO_DIR.glob(f"{pid}.*"):
+            f.unlink(missing_ok=True)
+
+
+def buyer_path(bid: str) -> Path:
+    return BUYER_DIR / f"{bid}.json"
+
+
+def load_buyer(bid: str) -> dict | None:
+    p = buyer_path(bid)
+    return json.loads(p.read_text("utf-8")) if p.exists() else None
+
+
+def save_buyer(b: dict) -> dict:
+    b["updated_at"] = now()
+    with _lock:
+        tmp = BUYER_DIR / f"{b['id']}.json.tmp"
+        tmp.write_text(json.dumps(b, indent=1, ensure_ascii=False), "utf-8")
+        tmp.replace(buyer_path(b["id"]))
+    return b
