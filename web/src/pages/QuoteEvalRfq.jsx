@@ -82,6 +82,24 @@ export default function QuoteEvalRfq() {
                 <td className="px-4 py-2 text-xs text-slate-500">{r.decline_reason ? `Declined: ${r.decline_reason}` : ''}</td>
               </tr>
             ))}
+            {(() => {
+              try {
+                const list = JSON.parse(localStorage.getItem(`cx_ext_suppliers_${id}`) || '[]')
+                return list.map(s => (
+                  <tr key={s.id} className="bg-indigo-50/20">
+                    <td className="px-4 py-2 font-medium">
+                      {s.name} <span className="ml-1 rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-normal text-indigo-700">External</span>
+                    </td>
+                    <td className="px-4 py-2"><Badge k="sent">External Invite</Badge></td>
+                    <td className="px-4 py-2 text-xs text-slate-500">{s.sentAt}</td>
+                    <td className="px-4 py-2 text-xs text-slate-400">—</td>
+                    <td className="px-4 py-2 text-xs text-slate-400">—</td>
+                    <td className="px-4 py-2 text-xs">{requests[0]?.deadline || '—'}</td>
+                    <td className="px-4 py-2 text-xs text-slate-500">{s.email}{s.phone ? ` · ${s.phone}` : ''}</td>
+                  </tr>
+                ))
+              } catch { return null }
+            })()}
           </tbody>
         </table>
       </section>
